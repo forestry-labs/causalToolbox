@@ -6,23 +6,37 @@
 \alias{T_BART}
 \title{T-Learners}
 \usage{
-T_RF(feat, tr, yobs, nthread = 0, verbose = TRUE,
-  mu0.forestry = list(relevant.Variable = 1:ncol(feat), ntree = 1000,
-  replace = TRUE, sample.fraction = 0.9, mtry = ncol(feat), nodesizeSpl =
-  1, nodesizeAvg = 3, splitratio = 0.5, middleSplit = FALSE),
-  mu1.forestry = list(relevant.Variable = 1:ncol(feat), ntree = 1000,
-  replace = TRUE, sample.fraction = 0.9, mtry = ncol(feat), nodesizeSpl =
-  1, nodesizeAvg = 3, splitratio = 0.5, middleSplit = FALSE))
+T_RF(
+  feat,
+  tr,
+  yobs,
+  nthread = 0,
+  verbose = TRUE,
+  mu0.forestry = list(relevant.Variable = 1:ncol(feat), ntree = 1000, replace = TRUE,
+    sample.fraction = 0.9, mtry = ncol(feat), nodesizeSpl = 1, nodesizeAvg = 3,
+    splitratio = 0.5, middleSplit = FALSE),
+  mu1.forestry = list(relevant.Variable = 1:ncol(feat), ntree = 1000, replace = TRUE,
+    sample.fraction = 0.9, mtry = ncol(feat), nodesizeSpl = 1, nodesizeAvg = 3,
+    splitratio = 0.5, middleSplit = FALSE)
+)
 
-T_BART(feat, tr, yobs, ndpost = 1200, ntree = 200, nthread = 1,
-  verbose = FALSE, mu0.BART = list(sparse = FALSE, theta = 0, omega =
-  1, a = 0.5, b = 1, augment = FALSE, rho = NULL, usequants = FALSE, cont =
-  FALSE, sigest = NA, sigdf = 3, sigquant = 0.9, k = 2, power = 2, base =
-  0.95, sigmaf = NA, lambda = NA, numcut = 100L, nskip = 100L),
-  mu1.BART = list(sparse = FALSE, theta = 0, omega = 1, a = 0.5, b = 1,
-  augment = FALSE, rho = NULL, usequants = FALSE, cont = FALSE, sigest =
-  NA, sigdf = 3, sigquant = 0.9, k = 2, power = 2, base = 0.95, sigmaf =
-  NA, lambda = NA, numcut = 100L, nskip = 100L))
+T_BART(
+  feat,
+  tr,
+  yobs,
+  ndpost = 1200,
+  ntree = 200,
+  nthread = 1,
+  verbose = FALSE,
+  mu0.BART = list(sparse = FALSE, theta = 0, omega = 1, a = 0.5, b = 1, augment =
+    FALSE, rho = NULL, usequants = FALSE, cont = FALSE, sigest = NA, sigdf = 3, sigquant
+    = 0.9, k = 2, power = 2, base = 0.95, sigmaf = NA, lambda = NA, numcut = 100L, nskip
+    = 100L),
+  mu1.BART = list(sparse = FALSE, theta = 0, omega = 1, a = 0.5, b = 1, augment =
+    FALSE, rho = NULL, usequants = FALSE, cont = FALSE, sigest = NA, sigdf = 3, sigquant
+    = 0.9, k = 2, power = 2, base = 0.95, sigmaf = NA, lambda = NA, numcut = 100L, nskip
+    = 100L)
+)
 }
 \arguments{
 \item{feat}{A data frame containing the features.}
@@ -139,7 +153,12 @@ xl_ci_rf <- CateCI(xl_rf, feature_test, B = 500)
   }
 }
 \seealso{
-Other metalearners: \code{\link{M-Learner}},
-  \code{\link{S-Learner}}, \code{\link{X-Learner}}
+Other metalearners: 
+\code{\link{M-Learner}},
+\code{\link{S-Learner}},
+\code{\link{X-Learner}}
+}
+\author{
+Soeren R. Kuenzel
 }
 \concept{metalearners}

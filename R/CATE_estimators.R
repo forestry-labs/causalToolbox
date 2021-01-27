@@ -1,4 +1,4 @@
-#' @import forestry
+#' @import Rforestry
 NULL
 
 # Cate estimators --------------------------------------------------------------

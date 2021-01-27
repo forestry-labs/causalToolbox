@@ -7,19 +7,30 @@
 \alias{simulate_causal_experiment}
 \alias{pscores.simulate_causal_experiment}
 \alias{mu0.simulate_causal_experiment}
+\alias{tau.simulate_causal_experiment}
 \title{Simulate a Causal Experiment}
 \usage{
 simulate_correlation_matrix(dim, alpha)
 
-simulate_causal_experiment(ntrain = nrow(given_features),
-  ntest = nrow(given_features), dim = ncol(given_features),
-  alpha = 0.1, feat_distribution = "normal", given_features = NULL,
-  pscore = "rct5", mu0 = "sparseLinearStrong",
-  tau = "sparseLinearWeak", testseed = NULL, trainseed = NULL)
+simulate_causal_experiment(
+  ntrain = nrow(given_features),
+  ntest = nrow(given_features),
+  dim = ncol(given_features),
+  alpha = 0.1,
+  feat_distribution = "normal",
+  given_features = NULL,
+  pscore = "rct5",
+  mu0 = "sparseLinearStrong",
+  tau = "sparseLinearWeak",
+  testseed = NULL,
+  trainseed = NULL
+)
 
 pscores.simulate_causal_experiment
 
 mu0.simulate_causal_experiment
+
+tau.simulate_causal_experiment
 }
 \arguments{
 \item{dim}{Dimension of the data set.}

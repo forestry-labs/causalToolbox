@@ -4,7 +4,9 @@
 \name{gotv}
 \alias{gotv}
 \title{Get Out To Vote}
-\format{An object of class \code{data.frame} with 229461 rows and 9 columns.}
+\format{
+An object of class \code{data.frame} with 229461 rows and 9 columns.
+}
 \usage{
 gotv
 }

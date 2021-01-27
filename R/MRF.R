@@ -210,7 +210,7 @@ M_RF_fully_specified <-
     X_1 <- feat[tr == 1, ]
     
     m_0 <-
-      forestry::forestry(
+      Rforestry::forestry(
         x = X_0[, hyperparameter_list[["l_first_0"]]$relevant.Variable],
         y = yobs_0,
         ntree = hyperparameter_list[["l_first_0"]]$ntree,
@@ -225,7 +225,7 @@ M_RF_fully_specified <-
       )
     
     m_1 <-
-      forestry::forestry(
+      Rforestry::forestry(
         x = X_1[, hyperparameter_list[["l_first_1"]]$relevant.Variable],
         y = yobs_1,
         ntree = hyperparameter_list[["l_first_1"]]$ntree,
@@ -240,7 +240,7 @@ M_RF_fully_specified <-
       )
     
     m_prop <-
-      forestry::forestry(
+      Rforestry::forestry(
         x = feat[, hyperparameter_list[["l_prop"]]$relevant.Variable],
         y = tr,
         ntree = hyperparameter_list[["l_prop"]]$ntree,
@@ -272,7 +272,7 @@ M_RF_fully_specified <-
         (yobs - m1_hat * (1 - propensity_score_hat) - 
            m0_hat * propensity_score_hat)
 
-      m_tau <- forestry::forestry(
+      m_tau <- Rforestry::forestry(
         x = feat,
         y = modified_outcome_ra,
         ntree = hyperparameter_list[["l_second"]]$ntree,

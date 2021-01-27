@@ -280,7 +280,7 @@ X_RF_fully_specified <-
     X_1 <- feat[tr == 1, ]
     
     m_0 <-
-      forestry::forestry(
+      Rforestry::forestry(
         x = X_0[, hyperparameter_list[["l_first_0"]]$relevant.Variable],
         y = yobs_0,
         ntree = hyperparameter_list[["l_first_0"]]$ntree,
@@ -295,7 +295,7 @@ X_RF_fully_specified <-
       )
     
     m_1 <-
-      forestry::forestry(
+      Rforestry::forestry(
         x = X_1[, hyperparameter_list[["l_first_1"]]$relevant.Variable],
         y = yobs_1,
         ntree = hyperparameter_list[["l_first_1"]]$ntree,
@@ -323,7 +323,7 @@ X_RF_fully_specified <-
       predict(m_0, X_1[, hyperparameter_list[["l_first_1"]]$relevant.Variable])
     
     m_tau_0 <-
-      forestry::forestry(
+      Rforestry::forestry(
         x = X_0[, hyperparameter_list[["l_second_0"]]$relevant.Variable],
         y = r_0,
         ntree = hyperparameter_list[["l_second_0"]]$ntree,
@@ -338,7 +338,7 @@ X_RF_fully_specified <-
       )
     
     m_tau_1 <-
-      forestry::forestry(
+      Rforestry::forestry(
         x = X_1[, hyperparameter_list[["l_second_1"]]$relevant.Variable],
         y = r_1,
         ntree = hyperparameter_list[["l_second_1"]]$ntree,
@@ -357,7 +357,7 @@ X_RF_fully_specified <-
     
     # Prop score estimation ----------------------------------------------------
     m_prop <-
-      forestry::forestry(
+      Rforestry::forestry(
         x = feat[, hyperparameter_list[["l_prop"]]$relevant.Variable],
         y = tr,
         ntree = hyperparameter_list[["l_prop"]]$ntree,

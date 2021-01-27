@@ -135,7 +135,7 @@ S_RF_fully_specified <-
            hyperparameter_list,
            verbose) {
     
-    m <- forestry::forestry(
+    m <- Rforestry::forestry(
       x = cbind(feat[, hyperparameter_list[["mu.forestry"]]$relevant.Variable], 
                 tr),
       y = yobs,

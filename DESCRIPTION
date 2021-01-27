@@ -22,14 +22,14 @@ Imports:
     Rcpp (>= 0.12.9),
     methods,
     stats,
-    forestry,
+    Rforestry,
     ranger,
     Matching,
     quickmatch,
     distances, 
     BART
-Remotes: soerenkuenzel/forestry
-RoxygenNote: 6.1.1
+Remotes: forestry-labs/Rforestry
+RoxygenNote: 7.1.1
 Suggests:
     testthat,
     knitr,

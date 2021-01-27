@@ -6,29 +6,41 @@
 \alias{M_BART}
 \title{M-Learners}
 \usage{
-M_RF(feat, tr, yobs, nthread = 0, verbose = FALSE,
-  mu.forestry = list(relevant.Variable = 1:ncol(feat), ntree = 1000,
-  replace = TRUE, sample.fraction = 0.8, mtry = round(ncol(feat) * 13/20),
-  nodesizeSpl = 2, nodesizeAvg = 1, splitratio = 1, middleSplit = TRUE),
-  e.forestry = list(relevant.Variable = 1:ncol(feat), ntree = 500,
-  replace = TRUE, sample.fraction = 0.5, mtry = ncol(feat), nodesizeSpl =
-  11, nodesizeAvg = 33, splitratio = 0.5, middleSplit = FALSE),
-  tau.forestry = list(relevant.Variable = 1:ncol(feat), ntree = 1000,
-  replace = TRUE, sample.fraction = 0.7, mtry = round(ncol(feat) * 17/20),
-  nodesizeSpl = 5, nodesizeAvg = 6, splitratio = 0.8, middleSplit = TRUE))
+M_RF(
+  feat,
+  tr,
+  yobs,
+  nthread = 0,
+  verbose = FALSE,
+  mu.forestry = list(relevant.Variable = 1:ncol(feat), ntree = 1000, replace = TRUE,
+    sample.fraction = 0.8, mtry = round(ncol(feat) * 13/20), nodesizeSpl = 2, nodesizeAvg
+    = 1, splitratio = 1, middleSplit = TRUE),
+  e.forestry = list(relevant.Variable = 1:ncol(feat), ntree = 500, replace = TRUE,
+    sample.fraction = 0.5, mtry = ncol(feat), nodesizeSpl = 11, nodesizeAvg = 33,
+    splitratio = 0.5, middleSplit = FALSE),
+  tau.forestry = list(relevant.Variable = 1:ncol(feat), ntree = 1000, replace = TRUE,
+    sample.fraction = 0.7, mtry = round(ncol(feat) * 17/20), nodesizeSpl = 5, nodesizeAvg
+    = 6, splitratio = 0.8, middleSplit = TRUE)
+)
 
-M_BART(feat, tr, yobs, ndpost = 1200, ntree = 200, nthread = 1,
-  mu.BART = list(sparse = FALSE, theta = 0, omega = 1, a = 0.5, b = 1,
-  augment = FALSE, rho = NULL, usequants = FALSE, cont = FALSE, sigest =
-  NA, sigdf = 3, sigquant = 0.9, k = 2, power = 2, base = 0.95, sigmaf =
-  NA, lambda = NA, numcut = 100L, nskip = 100L), e.BART = list(sparse =
-  FALSE, theta = 0, omega = 1, a = 0.5, b = 1, augment = FALSE, rho = NULL,
-  usequants = FALSE, cont = FALSE, sigest = NA, sigdf = 3, sigquant = 0.9,
-  k = 2, power = 2, base = 0.95, sigmaf = NA, lambda = NA, numcut = 100L,
-  nskip = 100L), tau.BART = list(sparse = FALSE, theta = 0, omega = 1, a
-  = 0.5, b = 1, augment = FALSE, rho = NULL, usequants = FALSE, cont =
-  FALSE, sigest = NA, sigdf = 3, sigquant = 0.9, k = 2, power = 2, base =
-  0.95, sigmaf = NA, lambda = NA, numcut = 100L, nskip = 100L))
+M_BART(
+  feat,
+  tr,
+  yobs,
+  ndpost = 1200,
+  ntree = 200,
+  nthread = 1,
+  mu.BART = list(sparse = FALSE, theta = 0, omega = 1, a = 0.5, b = 1, augment = FALSE,
+    rho = NULL, usequants = FALSE, cont = FALSE, sigest = NA, sigdf = 3, sigquant = 0.9,
+    k = 2, power = 2, base = 0.95, sigmaf = NA, lambda = NA, numcut = 100L, nskip = 100L),
+  e.BART = list(sparse = FALSE, theta = 0, omega = 1, a = 0.5, b = 1, augment = FALSE,
+    rho = NULL, usequants = FALSE, cont = FALSE, sigest = NA, sigdf = 3, sigquant = 0.9,
+    k = 2, power = 2, base = 0.95, sigmaf = NA, lambda = NA, numcut = 100L, nskip = 100L),
+  tau.BART = list(sparse = FALSE, theta = 0, omega = 1, a = 0.5, b = 1, augment =
+    FALSE, rho = NULL, usequants = FALSE, cont = FALSE, sigest = NA, sigdf = 3, sigquant
+    = 0.9, k = 2, power = 2, base = 0.95, sigmaf = NA, lambda = NA, numcut = 100L, nskip
+    = 100L)
+)
 }
 \arguments{
 \item{feat}{A data frame containing the features.}
@@ -164,7 +176,12 @@ xl_ci_rf <- CateCI(xl_rf, feature_test, B = 500)
   }
 }
 \seealso{
-Other metalearners: \code{\link{S-Learner}},
-  \code{\link{T-Learner}}, \code{\link{X-Learner}}
+Other metalearners: 
+\code{\link{S-Learner}},
+\code{\link{T-Learner}},
+\code{\link{X-Learner}}
+}
+\author{
+Soeren R. Kuenzel
 }
 \concept{metalearners}
