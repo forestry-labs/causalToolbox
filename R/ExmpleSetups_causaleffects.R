@@ -347,6 +347,7 @@ pscores.simulate_causal_experiment <- list(
 #' @format NULL
 #' @export
 mu0.simulate_causal_experiment <- list(
+  simple = function(feat) {2 * feat$x1 - 1},
   sparseLinearWeak = function(feat) {3 * feat$x1 + 5 * feat$x2},
   sparseLinearStrong = function(feat) {30 * feat$x1 + 50 * feat$x2},
   fullLinearWeak = function(feat) {
@@ -356,6 +357,16 @@ mu0.simulate_causal_experiment <- list(
 
     beta <- runif(d, -5, 5)
     as.matrix(feat) %*% beta
+  },
+  semiLinear = function(feat) {
+    oldSeed <- .Random.seed; on.exit( {.Random.seed <<- oldSeed} )
+    set.seed(53979361)
+    d <- ncol(feat)
+
+    beta <- runif(d, -5, 5)
+    ifelse(feat[,1] > .5,
+           as.matrix(feat) %*% beta + 5,
+           as.matrix(feat) %*% beta)
   },
   fullLinearStrong = function(feat) {
     oldSeed <- .Random.seed; on.exit({.Random.seed <<- oldSeed})
@@ -437,6 +448,14 @@ tau.simulate_causal_experiment <- list(
 
     beta <- runif(d, 1, 30)
     as.matrix(feat) %*% beta
+  },
+  semiLinear = function(feat) {
+    oldSeed <- .Random.seed; on.exit( {.Random.seed <<- oldSeed} )
+    set.seed(53979361)
+
+    ifelse(feat[,2] > .5,
+           8,
+           0)
   },
   fullLocallyLinear = function(feat) {
     oldSeed <- .Random.seed; on.exit({.Random.seed <<- oldSeed})
