@@ -170,7 +170,8 @@ simulate_causal_experiment <- function(ntrain = nrow(given_features),
                                        mu0 = "sparseLinearStrong",
                                        tau = "sparseLinearWeak",
                                        testseed = NULL,
-                                       trainseed = NULL) {
+                                       trainseed = NULL,
+                                       noEffect = FALSE) {
 
   ## First we define a base function which will later be called with different
   # setups:
@@ -301,8 +302,12 @@ simulate_causal_experiment <- function(ntrain = nrow(given_features),
   }
 
   m_c_truth <- mu0.simulate_causal_experiment[[mu0]]
-  m_t_truth <- function(feat)
-    m_c_truth(feat) + tau.simulate_causal_experiment[[tau]](feat)
+  if (noEffect) {
+    m_t_truth <- function(feat) m_c_truth(feat)
+  } else {
+    m_t_truth <- function(feat)
+      m_c_truth(feat) + tau.simulate_causal_experiment[[tau]](feat)
+  }
   propscore <- pscores.simulate_causal_experiment[[pscore]]
 
   return(
@@ -357,7 +362,7 @@ mu0.simulate_causal_experiment <- list(
     set.seed(53979361)
     d <- ncol(feat)
 
-    beta <- runif(d, -50, 50)
+    beta <- runif(d, 1, 30)
     as.matrix(feat) %*% beta
   },
   fullLocallyLinear = function(feat) {
@@ -365,9 +370,9 @@ mu0.simulate_causal_experiment <- list(
     set.seed(7020829)
     d <- ncol(feat)
 
-    beta1 <- runif(d, -5, 5)
-    beta2 <- runif(d, -5, 5)
-    beta3 <- runif(d, -5, 5)
+    beta1 <- runif(d, -15, 15)
+    beta2 <- runif(d, -15, 15)
+    beta3 <- runif(d, -15, 15)
 
     ifelse(
       feat[, ncol(feat)] < -0.4,
@@ -430,7 +435,7 @@ tau.simulate_causal_experiment <- list(
     set.seed(53979361)
     d <- ncol(feat)
 
-    beta <- runif(d, -50, 50)
+    beta <- runif(d, 1, 30)
     as.matrix(feat) %*% beta
   },
   fullLocallyLinear = function(feat) {
@@ -438,9 +443,9 @@ tau.simulate_causal_experiment <- list(
     set.seed(6482481)
     d <- ncol(feat)
 
-    beta1 <- runif(d, -5, 5)
-    beta2 <- runif(d, -5, 5)
-    beta3 <- runif(d, -5, 5)
+    beta1 <- runif(d, -15, 15)
+    beta2 <- runif(d, -15, 15)
+    beta3 <- runif(d, -15, 15)
 
     ifelse(
       feat[, ncol(feat)] < -0.4,
