@@ -71,14 +71,14 @@ simulate_correlation_matrix <- function(dim, alpha) {
 #'   the seed of the main session is used.
 #' @param trainseed The seed used to generate the training data. If NULL,
 #'   then the seed of the main session is used.
-#' @return A list with the following elements: 
-#'   \item{\code{setup_name}}{Name of the setup.} 
+#' @return A list with the following elements:
+#'   \item{\code{setup_name}}{Name of the setup.}
 #'   \item{\code{m_t_truth}}{Function containing the response function of the
 #'   treated units.}
 #'   \item{\code{m_c_truth}}{Function containing the response function of the
 #'   control units.}
-#'   \item{\code{propscore}}{Propensity score function.} 
-#'   \item{\code{alpha}}{Chosen alpha.} 
+#'   \item{\code{propscore}}{Propensity score function.}
+#'   \item{\code{alpha}}{Chosen alpha.}
 #'   \item{\code{feat_te}}{Data.frame containing the features of the test
 #'   samples.}
 #'   \item{\code{W_te}}{Numeric vector containing the treatment assignment of
@@ -87,7 +87,7 @@ simulate_correlation_matrix <- function(dim, alpha) {
 #'   treatment effects of the test samples.}
 #'   \item{\code{Yobs_te}}{Numeric vector containing the observed Y values of
 #'   the test samples.}
-#'   \item{\code{feat_tr}}{Data.frame containing the features of the training 
+#'   \item{\code{feat_tr}}{Data.frame containing the features of the training
 #'   samples.}
 #'   \item{\code{W_tr}}{Numeric vector containing the treatment assignment of
 #'   the training samples.}
@@ -107,30 +107,30 @@ simulate_correlation_matrix <- function(dim, alpha) {
 #' @references \itemize{
 #'   \item Daniel Lewandowskia, Dorota Kurowickaa, Harry Joe (2009). Generating
 #'   Random Correlation Matrices Based on Vines and Extended Onion Method.
-#'   \item Sören Künzel, Jasjeet Sekhon, Peter Bickel, and Bin Yu (2017). 
+#'   \item Sören Künzel, Jasjeet Sekhon, Peter Bickel, and Bin Yu (2017).
 #'     Meta-learners for Estimating Heterogeneous Treatment Effects Using
 #'     Machine Learning.
 #'     }
 #' @examples
 #' require(causalToolbox)
-#' 
+#'
 #' ce_sim <- simulate_causal_experiment(
 #'   ntrain = 20,
 #'   ntest = 20,
 #'   dim = 7
 #' )
-#' 
+#'
 #' ce_sim
-#' 
+#'
 #' \dontrun{
 #' estimators <- list(
-#'   S_RF = S_RF, 
-#'   T_RF = T_RF, 
-#'   X_RF = X_RF, 
+#'   S_RF = S_RF,
+#'   T_RF = T_RF,
+#'   X_RF = X_RF,
 #'   S_BART = S_BART,
-#'   T_BART = T_BART, 
+#'   T_BART = T_BART,
 #'   X_BARTT = X_BART)
-#' 
+#'
 #' performance <- data.frame()
 #' for(tau_n in names(tau.simulate_causal_experiment)){
 #'   for(mu0_n in names(mu0.simulate_causal_experiment)) {
@@ -139,27 +139,27 @@ simulate_correlation_matrix <- function(dim, alpha) {
 #'       pscore = "rct5",
 #'       mu0 = mu0_n,
 #'       tau = tau_n)
-#'     
+#'
 #'     for(estimator_n in names(estimators)) {
 #'       print(paste(tau_n, mu0_n, estimator_n))
-#'     
+#'
 #'       trained_e <- estimators[[estimator_n]](ce$feat_tr, ce$W_tr, ce$Yobs_tr)
-#'       performance <- 
-#'         rbind(performance, 
+#'       performance <-
+#'         rbind(performance,
 #'               data.frame(
 #'                 mu0 = mu0_n,
 #'                 tau = tau_n,
 #'                 estimator = estimator_n,
-#'                 MSE = mean((EstimateCate(trained_e, ce$feat_te) - 
+#'                 MSE = mean((EstimateCate(trained_e, ce$feat_te) -
 #'                             ce$tau_te)^2)))
 #'     }
 #'   }
 #' }
-#' 
+#'
 #' reshape2::dcast(data = performance, mu0 + tau ~ estimator)
 #' }
 #' @import MASS
-#' @export 
+#' @export
 simulate_causal_experiment <- function(ntrain = nrow(given_features),
                                        ntest = nrow(given_features),
                                        dim = ncol(given_features),
@@ -288,23 +288,23 @@ simulate_causal_experiment <- function(ntrain = nrow(given_features),
 
   # Definition of different setups ---------------------------------------------
   if(!mu0 %in% names(mu0.simulate_causal_experiment)){
-    stop(paste("mu0 must be one of", 
+    stop(paste("mu0 must be one of",
                paste(names(mu0.simulate_causal_experiment), collapse = ", ")))
   }
   if(!tau %in% names(tau.simulate_causal_experiment)){
-    stop(paste("tau must be one of", 
+    stop(paste("tau must be one of",
                paste(names(tau.simulate_causal_experiment), collapse = ", ")))
   }
   if(!pscore %in% names(pscores.simulate_causal_experiment)){
-    stop(paste("pscore must be one of", 
+    stop(paste("pscore must be one of",
                paste(names(pscores.simulate_causal_experiment), collapse = ", ")))
   }
-  
+
   m_c_truth <- mu0.simulate_causal_experiment[[mu0]]
   m_t_truth <- function(feat)
     m_c_truth(feat) + tau.simulate_causal_experiment[[tau]](feat)
   propscore <- pscores.simulate_causal_experiment[[pscore]]
-  
+
   return(
     c(list(
         setup_name = paste0("mu0=", mu0,", tau=", tau, ", pscore=", pscore),
@@ -326,10 +326,10 @@ simulate_causal_experiment <- function(ntrain = nrow(given_features),
 # Propensity score functions ---------------------------------------------------
 #' @rdname causalExp
 #' @format NULL
-#' @export 
+#' @export
 pscores.simulate_causal_experiment <- list(
-  rct5 = function(feat) {.5}, 
-  rct1 = function(feat) {.1}, 
+  rct5 = function(feat) {.5},
+  rct1 = function(feat) {.1},
   rct01 = function(feat) {.01},
   osSparse1Linear = function(feat) {
     apply(feat, 1, function(x)
@@ -348,27 +348,27 @@ mu0.simulate_causal_experiment <- list(
     oldSeed <- .Random.seed; on.exit( {.Random.seed <<- oldSeed} )
     set.seed(53979361)
     d <- ncol(feat)
-    
+
     beta <- runif(d, -5, 5)
-    as.matrix(feat) %*% beta   
+    as.matrix(feat) %*% beta
   },
   fullLinearStrong = function(feat) {
     oldSeed <- .Random.seed; on.exit({.Random.seed <<- oldSeed})
     set.seed(53979361)
     d <- ncol(feat)
-    
+
     beta <- runif(d, -50, 50)
-    as.matrix(feat) %*% beta   
-  }, 
+    as.matrix(feat) %*% beta
+  },
   fullLocallyLinear = function(feat) {
     oldSeed <- .Random.seed; on.exit({.Random.seed <<- oldSeed})
     set.seed(7020829)
     d <- ncol(feat)
-    
+
     beta1 <- runif(d, -5, 5)
     beta2 <- runif(d, -5, 5)
     beta3 <- runif(d, -5, 5)
-    
+
     ifelse(
       feat[, ncol(feat)] < -0.4,
       as.matrix(feat) %*% beta1,
@@ -376,15 +376,15 @@ mu0.simulate_causal_experiment <- list(
         feat[, ncol(feat)] < 0.4,
         as.matrix(feat) %*% beta2,
         as.matrix(feat) %*% beta3))
-  }, 
+  },
   fullLinearWeakStep = function(feat) {
     oldSeed <- .Random.seed; on.exit({.Random.seed <<- oldSeed})
     set.seed(1496661)
     d <- ncol(feat)
-    
+
     beta <- runif(d, -5, 5)
     as.matrix(feat) %*% beta + ifelse(feat$x1 > 0, 5, 0)
-  }, 
+  },
   sparseNonLinear1 = function(feat) {
     sin(feat$x1) *
       sin(feat$x2) *
@@ -397,17 +397,21 @@ mu0.simulate_causal_experiment <- list(
            (1 + exp(-12 * (feat$x3 - 0.5))) *
            (1 + exp(-12 * (feat$x4 - 0.5))) *
            (1 + exp(-12 * (feat$x5 - 0.5))))
-  }, 
+  },
   sparseNonLinear3 = function(feat) {
     (1 + 1 / (1 + exp(-20 * (feat$x1 - 1 / 3)))) *
       (1 + 1 / (1 + exp(-20 * (feat$x2 - 1 / 3))))
+  },
+  complexNonLinear = function(feat) {
+    -2/((1 + exp(-12 * (feat$x1 - 0.5)))*
+         (1 + exp(-12 * (feat$x2 - 0.5))))
   }
 )
 
 # tau functions ----------------------------------------------------------------
 #' @rdname causalExp
 #' @format NULL
-#' @export 
+#' @export
 tau.simulate_causal_experiment <- list(
   no = function(feat) {0},
   const = function(feat) {10},
@@ -416,28 +420,28 @@ tau.simulate_causal_experiment <- list(
     oldSeed <- .Random.seed; on.exit({.Random.seed <<- oldSeed})
     set.seed(53979361)
     d <- ncol(feat)
-    
+
     beta <- runif(d, -5, 5)
-    as.matrix(feat) %*% beta   
-  }, 
+    as.matrix(feat) %*% beta
+  },
   sparseLinearWeak = function(feat) {3 * feat$x1 + 5 * feat$x2},
   fullLinearStrong = function(feat) {
     oldSeed <- .Random.seed; on.exit({.Random.seed <<- oldSeed})
     set.seed(53979361)
     d <- ncol(feat)
-    
+
     beta <- runif(d, -50, 50)
-    as.matrix(feat) %*% beta   
-  }, 
+    as.matrix(feat) %*% beta
+  },
   fullLocallyLinear = function(feat) {
     oldSeed <- .Random.seed; on.exit({.Random.seed <<- oldSeed})
     set.seed(6482481)
     d <- ncol(feat)
-    
+
     beta1 <- runif(d, -5, 5)
     beta2 <- runif(d, -5, 5)
     beta3 <- runif(d, -5, 5)
-    
+
     ifelse(
       feat[, ncol(feat)] < -0.4,
       as.matrix(feat) %*% beta1,
@@ -445,21 +449,25 @@ tau.simulate_causal_experiment <- list(
         feat[, ncol(feat)] < 0.4,
         as.matrix(feat) %*% beta2,
         as.matrix(feat) %*% beta3))
-  }, 
+  },
   sparseNonLinear3 = function(feat) {
     (1 + 1 / (1 + exp(-20 * (feat$x1 - 1 / 3)))) *
       (1 + 1 / (1 + exp(-20 * (feat$x2 - 1 / 3))))
+  },
+  complexNonLinear = function(feat) {
+    2/((1 + exp(-12 * (feat$x1 - 0.5)))*
+         (1 + exp(-12 * (feat$x2 - 0.5))))
   })
 
 # Real data --------------------------------------------------------------------
 #' @title Get Out To Vote
-#' @description 
+#' @description
 #' This is an example data set, and it has been created by looking at a
 #' certain subset of the "Social Pressure and Voter Turnout: Evidence from a
 #' Large-Scale Field Experiment" study that tested the impact of social pressure
 #' on voter turnout. A precise description and the full data set can be found at
-#' \url{https://isps.yale.edu/research/data/d001}. 
-#' 
+#' \url{https://isps.yale.edu/research/data/d001}.
+#'
 #' The study consists of seven key, individual-level covariates, most of which
 #' are discrete: gender, age, and whether the registered individual voted in the
 #' primary elections in 2000, 2002, and 2004 or the general elections in 2000 and
