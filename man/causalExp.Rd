@@ -68,6 +68,12 @@ the seed of the main session is used.}
 
 \item{trainseed}{The seed used to generate the training data. If NULL,
 then the seed of the main session is used.}
+
+\item{noEffect}{Boolean flag to specify whether the experiment has 
+no true effect. When this is set to TRUE, the U_0 function will be used
+for both control and treated observations. When this is false, the U_0 
+function will be used for control observations, and the U_1 functions will 
+be used for treated observations. Default is FALSE.}
 }
 \value{
 A correlation matrix.
@@ -96,11 +102,6 @@ A list with the following elements:
   treatment effects of the training samples.}
   \item{\code{Yobs_tr}}{Numeric vector containing the observed Y values of
   the training samples.}
-  \item{\code{noEffect}}{Boolean flag to specify whether the experiment has 
-  no true effect. When this is set to TRUE, the U_0 function will be used
-  for both control and treated observations. When this is false, the U_0 
-  function will be used for control observations, and the U_1 functions will 
-  be used for treated observations. Default is FALSE.}
 }
 \description{
 \code{simulate_correlation_matrix} uses the C-vine method for

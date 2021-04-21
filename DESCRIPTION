@@ -18,7 +18,6 @@ Imports:
     MASS (>= 7.3.0),
     rBayesianOptimization,
     dbarts (>= 0.8.7),
-    BayesTree (>= 0.3.1.4),
     Rcpp (>= 0.12.9),
     methods,
     stats,
