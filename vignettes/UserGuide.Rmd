@@ -1,8 +1,11 @@
 ---
-title: "User Manual"
 author: "Sören Künzel and Ling Xie"
-date: "12/4/2018"
-output: html_document
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::knitr}
+  %\VignetteIndexEntry{"User Manual"}
+  %\usepackage[UTF-8]{inputenc}
 ---
 
 ```{r setup, include=FALSE}
@@ -20,7 +23,7 @@ in 2000 and 2002. The goal of this study was to increase voter turnout (**voted*
 in the 2006 primary election. The authors used a mailer that is indicated in the
 **treatment** column. For treated units the treatment variable is equal to 1 and
 for units in the control group, the treatment indicator is equal to 0.
-```{r, read in data, cache=TRUE}
+```{r, read in data, cache=FALSE}
 library(causalToolbox)
 head(gotv)
 ```
@@ -31,7 +34,7 @@ on the [forestry package](https://github.com/soerenkuenzel/forestry) and
 **MO_BART, S_BART, T_BART, and X_BART** are based on the [dbarts
 package](https://cran.r-project.org/web/packages/BART/index.html).
 
-```{r, tRF CI, cache=TRUE}
+```{r, tRF CI, cache=FALSE}
 set.seed(30019455)
 train_ids <- sample.int(nrow(gotv), 1000)
 test_ids <- sample((1:nrow(gotv))[-train_ids], 5)
@@ -43,22 +46,22 @@ yobs <- gotv$voted[train_ids]
 # Create a T_RF learner with given features, treatments, and observations
 t_rf <- T_RF(feat = feat, tr = tr, yobs = yobs)
 # Estimate CATE with a given learner and test data
-cate_t_rf <- EstimateCate(t_rf, gotv[test_ids, ])
+cate_t_rf <- EstimateCate(t_rf, gotv[test_ids, -(8:9)])
 # Calculate the estimated confidence interval for the CATE
-cateCI <- CateCI(t_rf, gotv[test_ids, ], B = 2, verbose = FALSE)
+cateCI <- CateCI(t_rf, gotv[test_ids, -(8:9)], B = 2, verbose = FALSE)
 cateCI
 ```
 
 The other Cate estimators are constructed similarly to this one. Next, we train our CATE estimators based on **S_RF, X_BART, and T_BART** respectively. 
-```{r, several learners, cache=TRUE}
+```{r, several learners, cache=FALSE}
 set.seed(50245181)
 
 s_rf <- S_RF(feat = feat, tr = tr, yobs = yobs)
-cate_s_rf <- EstimateCate(s_rf, gotv[test_ids, ])
+cate_s_rf <- EstimateCate(s_rf, gotv[test_ids, -(8:9)])
 x_bart <- X_BART(feat = feat, tr = tr, yobs = yobs)
-cate_x_bart <- EstimateCate(x_bart, gotv[test_ids, ])
+cate_x_bart <- EstimateCate(x_bart, gotv[test_ids, -(8:9)])
 t_bart <- T_BART(feat = feat, tr = tr, yobs = yobs)
-cate_t_bart <- EstimateCate(t_bart, gotv[test_ids, ])
+cate_t_bart <- EstimateCate(t_bart, gotv[test_ids, -(8:9)])
 
 cbind(cate_t_rf, cate_s_rf, cate_x_bart, cate_t_bart) 
 ```
@@ -78,7 +81,7 @@ X-BART, and MO-BART.
 Each of these functions 
 
 The *causalToolbox* package also implements a method to simulate many data sets:
-```{r, simulated Example 2, cache = TRUE}
+```{r, simulated Example 2, cache = FALSE}
 simulated_experiment <- simulate_causal_experiment(
   ntrain = 1000,
   ntest = 1000,
@@ -90,7 +93,7 @@ simulated_experiment <- simulate_causal_experiment(
 ```
 
 This method can be used to compare different estimators in terms of MSE.
-```{r, Example 2 run experiments, cache = TRUE}
+```{r, Example 2 run experiments, cache = FALSE}
 feat <- simulated_experiment$feat_tr
 tr <- simulated_experiment$W_tr
 yobs <- simulated_experiment$Yobs_tr
@@ -124,7 +127,7 @@ c("mse_xrf" = mean((cate_esti_xrf - cate_true) ^ 2),
 
 One can also access the coverage of confidence intervals. 
 
-```{r, Example 2 get CIs, cache = TRUE}
+```{r, Example 2 get CIs, cache = FALSE}
 ci_srf <- CateCI(tl_rf, feature_test, B = 2, verbose = FALSE)
 mean(ci_srf$X5. < cate_true & ci_srf$X95. > cate_true)
 ```

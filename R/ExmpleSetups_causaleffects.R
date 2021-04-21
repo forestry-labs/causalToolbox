@@ -95,6 +95,11 @@ simulate_correlation_matrix <- function(dim, alpha) {
 #'   treatment effects of the training samples.}
 #'   \item{\code{Yobs_tr}}{Numeric vector containing the observed Y values of
 #'   the training samples.}
+#'   \item{\code{noEffect}}{Boolean flag to specify whether the experiment has 
+#'   no true effect. When this is set to TRUE, the U_0 function will be used
+#'   for both control and treated observations. When this is false, the U_0 
+#'   function will be used for control observations, and the U_1 functions will 
+#'   be used for treated observations. Default is FALSE.}
 #' @details The function simulates causal experiments by generating the
 #'   features, treatment assignment, observed Y values, and CATE for
 #'   a test set and a training set. pscore, mu0, and tau define the response
