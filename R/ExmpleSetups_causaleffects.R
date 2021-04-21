@@ -512,3 +512,24 @@ tau.simulate_causal_experiment <- list(
 #'  }
 "gotv"
 
+
+#' @title Broockman and Kalla Transphobia data
+#' @description
+#' This is an example data set, and it has been created by looking at a
+#' certain subset of the "Social Pressure and Voter Turnout: Evidence from a
+#' Large-Scale Field Experiment" study that tested the impact of social pressure
+#' on voter turnout. A precise description and the full data set can be found at
+#' \url{https://isps.yale.edu/research/data/d001}.
+#'
+"uncleaned_transphobia"
+
+
+#' @title Broockman and Kalla Transphobia data (cleaned)
+#' @description
+#' This is an example data set, and it has been created by looking at a
+#' certain subset of the "Social Pressure and Voter Turnout: Evidence from a
+#' Large-Scale Field Experiment" study that tested the impact of social pressure
+#' on voter turnout. A precise description and the full data set can be found at
+#' \url{https://isps.yale.edu/research/data/d001}.
+#'
+"transphobia"
