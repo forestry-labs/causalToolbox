@@ -23,7 +23,8 @@ simulate_causal_experiment(
   mu0 = "sparseLinearStrong",
   tau = "sparseLinearWeak",
   testseed = NULL,
-  trainseed = NULL
+  trainseed = NULL,
+  noEffect = FALSE
 )
 
 pscores.simulate_causal_experiment
@@ -71,14 +72,14 @@ then the seed of the main session is used.}
 \value{
 A correlation matrix.
 
-A list with the following elements: 
-  \item{\code{setup_name}}{Name of the setup.} 
+A list with the following elements:
+  \item{\code{setup_name}}{Name of the setup.}
   \item{\code{m_t_truth}}{Function containing the response function of the
   treated units.}
   \item{\code{m_c_truth}}{Function containing the response function of the
   control units.}
-  \item{\code{propscore}}{Propensity score function.} 
-  \item{\code{alpha}}{Chosen alpha.} 
+  \item{\code{propscore}}{Propensity score function.}
+  \item{\code{alpha}}{Chosen alpha.}
   \item{\code{feat_te}}{Data.frame containing the features of the test
   samples.}
   \item{\code{W_te}}{Numeric vector containing the treatment assignment of
@@ -87,7 +88,7 @@ A list with the following elements:
   treatment effects of the test samples.}
   \item{\code{Yobs_te}}{Numeric vector containing the observed Y values of
   the test samples.}
-  \item{\code{feat_tr}}{Data.frame containing the features of the training 
+  \item{\code{feat_tr}}{Data.frame containing the features of the training
   samples.}
   \item{\code{W_tr}}{Numeric vector containing the treatment assignment of
   the training samples.}
@@ -127,11 +128,11 @@ ce_sim
 
 \dontrun{
 estimators <- list(
-  S_RF = S_RF, 
-  T_RF = T_RF, 
-  X_RF = X_RF, 
+  S_RF = S_RF,
+  T_RF = T_RF,
+  X_RF = X_RF,
   S_BART = S_BART,
-  T_BART = T_BART, 
+  T_BART = T_BART,
   X_BARTT = X_BART)
 
 performance <- data.frame()
@@ -142,18 +143,18 @@ for(tau_n in names(tau.simulate_causal_experiment)){
       pscore = "rct5",
       mu0 = mu0_n,
       tau = tau_n)
-    
+
     for(estimator_n in names(estimators)) {
       print(paste(tau_n, mu0_n, estimator_n))
-    
+
       trained_e <- estimators[[estimator_n]](ce$feat_tr, ce$W_tr, ce$Yobs_tr)
-      performance <- 
-        rbind(performance, 
+      performance <-
+        rbind(performance,
               data.frame(
                 mu0 = mu0_n,
                 tau = tau_n,
                 estimator = estimator_n,
-                MSE = mean((EstimateCate(trained_e, ce$feat_te) - 
+                MSE = mean((EstimateCate(trained_e, ce$feat_te) -
                             ce$tau_te)^2)))
     }
   }
@@ -166,7 +167,7 @@ reshape2::dcast(data = performance, mu0 + tau ~ estimator)
 \itemize{
   \item Daniel Lewandowskia, Dorota Kurowickaa, Harry Joe (2009). Generating
   Random Correlation Matrices Based on Vines and Extended Onion Method.
-  \item Sören Künzel, Jasjeet Sekhon, Peter Bickel, and Bin Yu (2017). 
+  \item Sören Künzel, Jasjeet Sekhon, Peter Bickel, and Bin Yu (2017).
     Meta-learners for Estimating Heterogeneous Treatment Effects Using
     Machine Learning.
     }
