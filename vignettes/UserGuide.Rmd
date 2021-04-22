@@ -69,7 +69,8 @@ cbind(cate_t_rf, cate_s_rf, cate_x_bart, cate_t_bart)
 
 
 
-# Package strucutre and detailed example
+# Package structure and detailed example
+
 The package goal of the package is to make heterogeneous treatment effect 
 estimation simple and useful. The package is created in such a way that it 
 encourages high scientific standards. 
@@ -86,7 +87,6 @@ simulated_experiment <- simulate_causal_experiment(
   ntrain = 1000,
   ntest = 1000,
   dim = 10,
-  #setup = "complexTau",
   testseed = 293901,
   trainseed = 307017
 )
@@ -128,7 +128,7 @@ c("mse_xrf" = mean((cate_esti_xrf - cate_true) ^ 2),
 One can also access the coverage of confidence intervals. 
 
 ```{r, Example 2 get CIs, cache = FALSE}
-ci_srf <- CateCI(tl_rf, feature_test, B = 2, verbose = FALSE)
+ci_srf <- CateCI(tl_rf, feature_test, B = 10, verbose = FALSE)
 mean(ci_srf$X5. < cate_true & ci_srf$X95. > cate_true)
 ```
 

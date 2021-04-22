@@ -10,19 +10,7 @@ test_that("Tests that ShRF is working correctly", {
   sl <- S_RF(
     feat = feat,
     tr = tr,
-    yobs = yobs, 
-    mu.forestry =
-      list(
-        relevant.Variable = 1:ncol(feat),
-        ntree = 20,
-        replace = TRUE,
-        sample.fraction = 0.9,
-        mtry = ncol(feat),
-        nodesizeSpl = 1,
-        nodesizeAvg = 3,
-        splitratio = .5,
-        middleSplit = FALSE
-      ))
+    yobs = yobs)
 
   # expect_equal(EstimateCate(sl, feat)[1], 0.0491662, tolerance = 1e-4)
 
@@ -51,8 +39,11 @@ test_that("Tests that ShRF is working correctly", {
         mtry = ncol(feat),
         nodesizeSpl = 1,
         nodesizeAvg = 3,
+        nodesizeStrictSpl = 1,
+        nodesizeStrictAvg = 3,
         splitratio = .5,
-        middleSplit = FALSE))
+        middleSplit = FALSE,
+        OOBhonest = TRUE))
 
   # expect_equal(mean((
   #   EstimateCate(sl, cate_problem$feat_te) - cate_problem$tau_te

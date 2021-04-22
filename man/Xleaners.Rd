@@ -15,13 +15,16 @@ X_RF(
   verbose = FALSE,
   mu.forestry = list(relevant.Variable = 1:ncol(feat), ntree = 1000, replace = TRUE,
     sample.fraction = 0.8, mtry = round(ncol(feat) * 13/20), nodesizeSpl = 2, nodesizeAvg
-    = 1, splitratio = 1, middleSplit = TRUE),
+    = 1, nodesizeStrictSpl = 2, nodesizeStrictAvg = 1, splitratio = 1, middleSplit =
+    TRUE, OOBhonest = TRUE),
   tau.forestry = list(relevant.Variable = 1:ncol(feat), ntree = 1000, replace = TRUE,
     sample.fraction = 0.7, mtry = round(ncol(feat) * 17/20), nodesizeSpl = 5, nodesizeAvg
-    = 6, splitratio = 0.8, middleSplit = TRUE),
+    = 6, nodesizeStrictSpl = 3, nodesizeStrictAvg = 1, splitratio = 1, middleSplit =
+    TRUE, OOBhonest = TRUE),
   e.forestry = list(relevant.Variable = 1:ncol(feat), ntree = 500, replace = TRUE,
     sample.fraction = 0.5, mtry = ncol(feat), nodesizeSpl = 11, nodesizeAvg = 33,
-    splitratio = 0.5, middleSplit = FALSE)
+    nodesizeStrictSpl = 2, nodesizeStrictAvg = 1, splitratio = 1, middleSplit = FALSE,
+    OOBhonest = TRUE)
 )
 
 X_BART(
@@ -60,10 +63,10 @@ default is "propmean," which refers to propensity score weighting.}
 \item{verbose}{TRUE for detailed output, FALSE for no output.}
 
 \item{mu.forestry, tau.forestry, e.forestry}{A list containing the
-hyperparameters for the \code{forestry} package that are used for
+hyperparameters for the \code{Rforestry} package that are used for
 estimating the response functions, the CATE, and the propensity score.
-These hyperparameters are passed to the \code{forestry} package. (Please
-refer to the \href{https://github.com/soerenkuenzel/forestry}{forestry}
+These hyperparameters are passed to the \code{Rforestry} package. (Please
+refer to the \href{https://github.com/forestry-labs/Rforestry}{Rforestry}
 package for a more detailed documentation of the hyperparamters.)
 \itemize{
    \item \code{relevant.Variable} Variables that are only used in the first 
@@ -80,11 +83,18 @@ package for a more detailed documentation of the hyperparamters.)
          \code{forestry} package)
    \item \code{nodesizeAvg} Minimum nodesize in the first stage for 
          the observations in the averaging set.
+   \item \code{nodesizeStrictSpl} Minimum nodesize in the first stage for 
+         the observations in the splitting set. (See the details of the 
+         \code{forestry} package)
+   \item \code{nodesizeStrictAvg} Minimum nodesize in the first stage for 
+         the observations in the averaging set.
    \item \code{splitratio} Proportion of the training data used as the 
          splitting dataset in the first stage.
    \item \code{middleSplit} If true, the split value will be exactly in the 
          middle of two observations. Otherwise, it will take a point 
          based on a uniform distribution between the two observations. 
+   \item \code{OOBhonest} If true, forestry object will use the Out of Bag
+         honesty implemented in the \code{Rforestry} package.
 }}
 
 \item{ndpost}{Number of posterior draws.}
@@ -138,7 +148,7 @@ The X-Learner estimates the CATE in three steps:
     \deqn{\tau(x) = g(x) \hat \tau_0(x) + (1 - g(x)) \hat \tau_1(x).} 
     If \code{predmode = "propmean"}, then \eqn{g(x) = e(x)}, where
     \eqn{e(x)} is an estimate of the propensity score using the 
-    \href{https://github.com/soerenkuenzel/forestry}{\code{forestry}} Random Forests
+    \href{https://github.com/forestry-labs/Rforestry}{\code{Rforestry}} Random Forests
     version with the hyperparameters specified in \code{e.forestry}.
     If \code{predmode = "control"}, then \eqn{g(x) = 1}, and if 
     \code{predmode = "treated"}, then \eqn{g(x) = 0}.

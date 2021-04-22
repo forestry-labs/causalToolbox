@@ -63,7 +63,7 @@ setClass(
 #'      observed outcomes of the control group as the dependent variable.}
 #'   \item{\code{m_1}}{An object of class forestry that is fitted with the 
 #'      observed outcomes of the treated group as the dependent variable.}
-#'   \item{\code{hyperparameter_list}}{List containting the hyperparameters of 
+#'   \item{\code{hyperparameter_list}}{List containing the hyperparameters of 
 #'      the three random forest algorithms used.}
 #'   \item{\code{creator}}{Function call of T_RF. This is used for different 
 #'      bootstrap procedures.}
@@ -85,8 +85,11 @@ T_RF <-
                mtry = ncol(feat),
                nodesizeSpl = 1,
                nodesizeAvg = 3,
-               splitratio = .5,
-               middleSplit = FALSE
+               nodesizeStrictSpl = 1,
+               nodesizeStrictAvg = 1,
+               splitratio = 1,
+               middleSplit = FALSE,
+               OOBhonest = TRUE
              ),
            mu1.forestry =
              list(
@@ -97,8 +100,11 @@ T_RF <-
                mtry = ncol(feat),
                nodesizeSpl = 1,
                nodesizeAvg = 3,
-               splitratio = .5,
-               middleSplit = FALSE
+               nodesizeStrictSpl = 1,
+               nodesizeStrictAvg = 1,
+               splitratio = 1,
+               middleSplit = FALSE,
+               OOBhonest = TRUE
              )) {
     # Cast input data to a standard format -------------------------------------
     feat <- as.data.frame(feat)
@@ -177,9 +183,12 @@ T_RF_fully_specified <-
         mtry = hyperparameter_list[["l_first_0"]]$mtry,
         nodesizeSpl = hyperparameter_list[["l_first_0"]]$nodesizeSpl,
         nodesizeAvg = hyperparameter_list[["l_first_0"]]$nodesizeAvg,
+        nodesizeStrictSpl = hyperparameter_list[["l_first_0"]]$nodesizeStrictSpl,
+        nodesizeStrictAvg = hyperparameter_list[["l_first_0"]]$nodesizeStrictAvg,
         nthread = hyperparameter_list[["general"]]$nthread,
         splitrule = "variance",
-        splitratio = hyperparameter_list[["l_first_0"]]$splitratio
+        splitratio = hyperparameter_list[["l_first_0"]]$splitratio,
+        OOBhonest = hyperparameter_list[["l_first_0"]]$OOBhonest
       )
     
     m_1 <-
@@ -192,9 +201,12 @@ T_RF_fully_specified <-
         mtry = hyperparameter_list[["l_first_1"]]$mtry,
         nodesizeSpl = hyperparameter_list[["l_first_1"]]$nodesizeSpl,
         nodesizeAvg = hyperparameter_list[["l_first_1"]]$nodesizeAvg,
+        nodesizeStrictSpl = hyperparameter_list[["l_first_1"]]$nodesizeStrictSpl,
+        nodesizeStrictAvg = hyperparameter_list[["l_first_1"]]$nodesizeStrictAvg,
         nthread = hyperparameter_list[["general"]]$nthread,
         splitrule = "variance",
-        splitratio = hyperparameter_list[["l_first_1"]]$splitratio
+        splitratio = hyperparameter_list[["l_first_1"]]$splitratio,
+        OOBhonest = hyperparameter_list[["l_first_1"]]$OOBhonest
       )
     
     

@@ -50,7 +50,7 @@ setClass(
 #'     \deqn{\tau(x) = g(x) \hat \tau_0(x) + (1 - g(x)) \hat \tau_1(x).} 
 #'     If \code{predmode = "propmean"}, then \eqn{g(x) = e(x)}, where
 #'     \eqn{e(x)} is an estimate of the propensity score using the 
-#'     \href{https://github.com/soerenkuenzel/forestry}{\code{forestry}} Random Forests
+#'     \href{https://github.com/forestry-labs/Rforestry}{\code{Rforestry}} Random Forests
 #'     version with the hyperparameters specified in \code{e.forestry}.
 #'     If \code{predmode = "control"}, then \eqn{g(x) = 1}, and if 
 #'     \code{predmode = "treated"}, then \eqn{g(x) = 0}.
@@ -64,10 +64,10 @@ setClass(
 #' @param nthread Number of threads which should be used to work in parallel.
 #' @param verbose TRUE for detailed output, FALSE for no output.
 #' @param mu.forestry,tau.forestry,e.forestry A list containing the
-#'   hyperparameters for the \code{forestry} package that are used for
+#'   hyperparameters for the \code{Rforestry} package that are used for
 #'   estimating the response functions, the CATE, and the propensity score.
-#'   These hyperparameters are passed to the \code{forestry} package. (Please
-#'   refer to the \href{https://github.com/soerenkuenzel/forestry}{forestry}
+#'   These hyperparameters are passed to the \code{Rforestry} package. (Please
+#'   refer to the \href{https://github.com/forestry-labs/Rforestry}{Rforestry}
 #'   package for a more detailed documentation of the hyperparamters.)
 #'   \itemize{
 #'      \item \code{relevant.Variable} Variables that are only used in the first 
@@ -84,11 +84,18 @@ setClass(
 #'            \code{forestry} package)
 #'      \item \code{nodesizeAvg} Minimum nodesize in the first stage for 
 #'            the observations in the averaging set.
+#'      \item \code{nodesizeStrictSpl} Minimum nodesize in the first stage for 
+#'            the observations in the splitting set. (See the details of the 
+#'            \code{forestry} package)
+#'      \item \code{nodesizeStrictAvg} Minimum nodesize in the first stage for 
+#'            the observations in the averaging set.
 #'      \item \code{splitratio} Proportion of the training data used as the 
 #'            splitting dataset in the first stage.
 #'      \item \code{middleSplit} If true, the split value will be exactly in the 
 #'            middle of two observations. Otherwise, it will take a point 
 #'            based on a uniform distribution between the two observations. 
+#'      \item \code{OOBhonest} If true, forestry object will use the Out of Bag
+#'            honesty implemented in the \code{Rforestry} package.
 #'   }
 #' @return An object from a class that contains the \code{CATEestimator}
 #'   class. It should be used with one of the following functions:
@@ -166,8 +173,11 @@ X_RF <-
                mtry = round(ncol(feat) * 13 / 20),
                nodesizeSpl = 2,
                nodesizeAvg = 1,
+               nodesizeStrictSpl = 2,
+               nodesizeStrictAvg = 1,
                splitratio = 1,
-               middleSplit = TRUE
+               middleSplit = TRUE,
+               OOBhonest = TRUE
              ),
            tau.forestry =
              list(
@@ -178,8 +188,11 @@ X_RF <-
                mtry = round(ncol(feat) * 17 / 20),
                nodesizeSpl = 5,
                nodesizeAvg = 6,
-               splitratio = 0.8,
-               middleSplit = TRUE
+               nodesizeStrictSpl = 3,
+               nodesizeStrictAvg = 1,
+               splitratio = 1,
+               middleSplit = TRUE,
+               OOBhonest = TRUE
              ),
            e.forestry =
              list(
@@ -190,8 +203,11 @@ X_RF <-
                mtry = ncol(feat),
                nodesizeSpl = 11,
                nodesizeAvg = 33,
-               splitratio = .5,
-               middleSplit = FALSE
+               nodesizeStrictSpl = 2,
+               nodesizeStrictAvg = 1,
+               splitratio = 1,
+               middleSplit = FALSE,
+               OOBhonest = TRUE
              )) {
     
     # Cast input data to a standard format -------------------------------------
@@ -289,9 +305,12 @@ X_RF_fully_specified <-
         mtry = hyperparameter_list[["l_first_0"]]$mtry,
         nodesizeSpl = hyperparameter_list[["l_first_0"]]$nodesizeSpl,
         nodesizeAvg = hyperparameter_list[["l_first_0"]]$nodesizeAvg,
+        nodesizeStrictSpl = hyperparameter_list[["l_first_0"]]$nodesizeStrictSpl,
+        nodesizeStrictAvg = hyperparameter_list[["l_first_0"]]$nodesizeStrictAvg,
         nthread = hyperparameter_list[["general"]]$nthread,
         splitrule = "variance",
-        splitratio = hyperparameter_list[["l_first_0"]]$splitratio
+        splitratio = hyperparameter_list[["l_first_0"]]$splitratio,
+        OOBhonest = hyperparameter_list[["l_first_0"]]$OOBhonest
       )
     
     m_1 <-
@@ -304,9 +323,12 @@ X_RF_fully_specified <-
         mtry = hyperparameter_list[["l_first_1"]]$mtry,
         nodesizeSpl = hyperparameter_list[["l_first_1"]]$nodesizeSpl,
         nodesizeAvg = hyperparameter_list[["l_first_1"]]$nodesizeAvg,
+        nodesizeStrictSpl = hyperparameter_list[["l_first_1"]]$nodesizeStrictSpl,
+        nodesizeStrictAvg = hyperparameter_list[["l_first_1"]]$nodesizeStrictAvg,
         nthread = hyperparameter_list[["general"]]$nthread,
         splitrule = "variance",
-        splitratio = hyperparameter_list[["l_first_1"]]$splitratio
+        splitratio = hyperparameter_list[["l_first_1"]]$splitratio,
+        OOBhonest = hyperparameter_list[["l_first_1"]]$OOBhonest
       )
     
     if (verbose) {
@@ -332,9 +354,12 @@ X_RF_fully_specified <-
         mtry = hyperparameter_list[["l_second_0"]]$mtry,
         nodesizeSpl = hyperparameter_list[["l_second_0"]]$nodesizeSpl,
         nodesizeAvg = hyperparameter_list[["l_second_0"]]$nodesizeAvg,
+        nodesizeStrictSpl = hyperparameter_list[["l_second_0"]]$nodesizeStrictSpl,
+        nodesizeStrictAvg = hyperparameter_list[["l_second_0"]]$nodesizeStrictAvg,
         nthread = hyperparameter_list[["general"]]$nthread,
         splitrule = "variance",
-        splitratio = hyperparameter_list[["l_second_0"]]$splitratio
+        splitratio = hyperparameter_list[["l_second_0"]]$splitratio,
+        OOBhonest = hyperparameter_list[["l_second_0"]]$OOBhonest
       )
     
     m_tau_1 <-
@@ -347,9 +372,12 @@ X_RF_fully_specified <-
         mtry = hyperparameter_list[["l_second_1"]]$mtry,
         nodesizeSpl = hyperparameter_list[["l_second_1"]]$nodesizeSpl,
         nodesizeAvg = hyperparameter_list[["l_second_1"]]$nodesizeAvg,
+        nodesizeStrictSpl = hyperparameter_list[["l_second_1"]]$nodesizeStrictSpl,
+        nodesizeStrictAvg = hyperparameter_list[["l_second_1"]]$nodesizeStrictAvg,
         nthread = hyperparameter_list[["general"]]$nthread,
         splitrule = "variance",
-        splitratio = hyperparameter_list[["l_second_1"]]$splitratio
+        splitratio = hyperparameter_list[["l_second_1"]]$splitratio,
+        OOBhonest = hyperparameter_list[["l_second_1"]]$OOBhonest
       )
     if (verbose) {
       print("Done with the second stage.")
@@ -366,9 +394,12 @@ X_RF_fully_specified <-
         mtry = hyperparameter_list[["l_prop"]]$mtry,
         nodesizeSpl = hyperparameter_list[["l_prop"]]$nodesizeSpl,
         nodesizeAvg = hyperparameter_list[["l_prop"]]$nodesizeAvg,
+        nodesizeStrictSpl = hyperparameter_list[["l_prop"]]$nodesizeStrictSpl,
+        nodesizeStrictAvg = hyperparameter_list[["l_prop"]]$nodesizeStrictAvg,
         nthread = hyperparameter_list[["general"]]$nthread,
         splitrule = "variance",
-        splitratio = hyperparameter_list[["l_prop"]]$splitratio
+        splitratio = hyperparameter_list[["l_prop"]]$splitratio,
+        OOBhonest = hyperparameter_list[["l_prop"]]$OOBhonest
       )
     if (verbose) {
       print("Done with the propensity score estimation.")

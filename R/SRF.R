@@ -78,8 +78,11 @@ S_RF <-
                mtry = ncol(feat),
                nodesizeSpl = 1,
                nodesizeAvg = 3,
-               splitratio = .5,
-               middleSplit = FALSE
+               nodesizeStrictSpl = 3,
+               nodesizeStrictAvg = 1,
+               splitratio = 1,
+               middleSplit = FALSE,
+               OOBhonest = TRUE
              )) {
     
     # Cast input data to a standard format -------------------------------------
@@ -145,9 +148,12 @@ S_RF_fully_specified <-
       mtry = hyperparameter_list[["mu.forestry"]]$mtry,
       nodesizeSpl = hyperparameter_list[["mu.forestry"]]$nodesizeSpl,
       nodesizeAvg = hyperparameter_list[["mu.forestry"]]$nodesizeAvg,
+      nodesizeStrictSpl = hyperparameter_list[["mu.forestry"]]$nodesizeStrictSpl,
+      nodesizeStrictAvg = hyperparameter_list[["mu.forestry"]]$nodesizeStrictAvg,
       nthread = hyperparameter_list[["general"]]$nthread,
       splitrule = "variance",
-      splitratio = hyperparameter_list[["mu.forestry"]]$splitratio
+      splitratio = hyperparameter_list[["mu.forestry"]]$splitratio,
+      OOBhonest = hyperparameter_list[["mu.forestry"]]$OOBhonest
     )
     
     new(

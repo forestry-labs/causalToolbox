@@ -14,7 +14,8 @@ S_RF(
   verbose = TRUE,
   mu.forestry = list(relevant.Variable = 1:ncol(feat), ntree = 1000, replace = TRUE,
     sample.fraction = 0.9, mtry = ncol(feat), nodesizeSpl = 1, nodesizeAvg = 3,
-    splitratio = 0.5, middleSplit = FALSE)
+    nodesizeStrictSpl = 3, nodesizeStrictAvg = 1, splitratio = 1, middleSplit = FALSE,
+    OOBhonest = TRUE)
 )
 
 S_BART(

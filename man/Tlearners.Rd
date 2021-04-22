@@ -14,10 +14,12 @@ T_RF(
   verbose = TRUE,
   mu0.forestry = list(relevant.Variable = 1:ncol(feat), ntree = 1000, replace = TRUE,
     sample.fraction = 0.9, mtry = ncol(feat), nodesizeSpl = 1, nodesizeAvg = 3,
-    splitratio = 0.5, middleSplit = FALSE),
+    nodesizeStrictSpl = 1, nodesizeStrictAvg = 1, splitratio = 1, middleSplit = FALSE,
+    OOBhonest = TRUE),
   mu1.forestry = list(relevant.Variable = 1:ncol(feat), ntree = 1000, replace = TRUE,
     sample.fraction = 0.9, mtry = ncol(feat), nodesizeSpl = 1, nodesizeAvg = 3,
-    splitratio = 0.5, middleSplit = FALSE)
+    nodesizeStrictSpl = 1, nodesizeStrictAvg = 1, splitratio = 1, middleSplit = FALSE,
+    OOBhonest = TRUE)
 )
 
 T_BART(
@@ -75,7 +77,7 @@ Object of class \code{T_RF}. It should be used with one of the
      observed outcomes of the control group as the dependent variable.}
   \item{\code{m_1}}{An object of class forestry that is fitted with the 
      observed outcomes of the treated group as the dependent variable.}
-  \item{\code{hyperparameter_list}}{List containting the hyperparameters of 
+  \item{\code{hyperparameter_list}}{List containing the hyperparameters of 
      the three random forest algorithms used.}
   \item{\code{creator}}{Function call of T_RF. This is used for different 
      bootstrap procedures.}
