@@ -429,7 +429,7 @@ X_RF_fully_specified <-
 
 # Estimate CATE Method ---------------------------------------------------------
 #' EstimateCate-X_hRF
-#' @rdname EstimateCate
+#' @rdname EstimateCate-X_hRF
 #' @inherit EstimateCate
 #' @exportMethod EstimateCate
 setMethod(

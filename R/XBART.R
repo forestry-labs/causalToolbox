@@ -135,7 +135,7 @@ X_BART <-
 
 
 #' EstimateCate-X_BART
-#' @rdname EstimateCate
+#' @rdname EstimateCate-X_BART
 #' @inherit EstimateCate
 #' @import stats
 #' @export
@@ -303,8 +303,7 @@ setMethod(
 
 
 #' CateCI-X_BART
-#' @rdname CateCI
-#' @inheritParams CateCI
+#' @rdname CateCI-X_BART
 #' @aliases CateCI,X_BART-method
 #' @exportMethod CateCI
 setMethod(

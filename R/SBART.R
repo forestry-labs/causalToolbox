@@ -83,7 +83,7 @@ S_BART <-
   }
 
 #' EstimateCate-S_BART
-#' @rdname EstimateCate
+#' @rdname EstimateCate-S_BART
 #' @inherit EstimateCate
 #' @exportMethod EstimateCate
 setMethod(
@@ -110,8 +110,7 @@ setMethod(
 
 
 #' CateCI-S_BART
-#' @rdname CateCI
-#' @inheritParams CateCI
+#' @rdname CateCI-S_BART
 #' @aliases CateCI,S_BART-method
 #' @exportMethod CateCI
 setMethod(

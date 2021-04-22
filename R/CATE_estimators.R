@@ -79,7 +79,7 @@ setGeneric(
 # Estimating Confidence intervals
 
 #' CateCI-MetaLearner
-#' @rdname CateCI
+#' @rdname CateCI-MetaLearner
 #' @description Returns the estimated confidence intervals for the CATE.
 #' @return A data frame of estimated CATE confidence intervals.
 #' @inherit CateCI

@@ -177,7 +177,7 @@ S_RF_fully_specified <-
 ### Estimate CATE Method ###
 ############################
 #' EstimateCate-S_hRF
-#' @rdname EstimateCate
+#' @rdname EstimateCate-S_hRF
 #' @inherit EstimateCate
 #' @exportMethod EstimateCate
 setMethod(

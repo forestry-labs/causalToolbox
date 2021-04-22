@@ -111,8 +111,8 @@ T_BART <-
     )
   }
 
-
-#' @rdname EstimateCate
+#' EstimateCate-T_BART-method
+#' @rdname EstimateCate-T_BART-method
 #' @inherit EstimateCate
 #' @exportMethod EstimateCate
 #' @param verbose TRUE for detailed output FALSE for no output
@@ -244,8 +244,7 @@ setMethod(
 
 
 #' CateCI-T_BART
-#' @rdname CateCI
-#' @inheritParams CateCI
+#' @rdname CateCI-T_BART
 #' @aliases CateCI,T_BART-method
 #' @exportMethod CateCI
 setMethod(

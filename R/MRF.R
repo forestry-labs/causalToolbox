@@ -308,7 +308,7 @@ M_RF_fully_specified <-
 
 
 #' EstimateCate-S_hRF
-#' @rdname EstimateCate
+#' @rdname EstimateCate-S_hRF
 #' @export
 setMethod(
   f = "EstimateCate",
