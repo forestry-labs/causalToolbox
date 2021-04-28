@@ -4,6 +4,7 @@
 #' @include XRF.R
 #' @include SBART.R
 #' @include SRF.R
+#' @include DRRF.R
 
 #-------------------------------------------------------------------------------
 catch_feat_input_errors <- function(feat) {

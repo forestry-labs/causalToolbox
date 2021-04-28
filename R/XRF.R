@@ -448,8 +448,8 @@ setMethod(
     
     if (predmode == "propmean") {
       return(
-        prop_scores        * predict(theObject@m_tau_0, feature_new) +
-          (1 - prop_scores)  * predict(theObject@m_tau_1, feature_new)
+        prop_scores * predict(theObject@m_tau_0, feature_new) +
+          (1 - prop_scores) * predict(theObject@m_tau_1, feature_new)
       )
     }
     

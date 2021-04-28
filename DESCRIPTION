@@ -36,8 +36,7 @@ Suggests:
 VignetteBuilder: knitr
 Collate: 
     'CATE_estimators.R'
-    'ExmpleSetups_causaleffects.R'
-    'MRF.R'
+    'DRBART.R'
     'SRF.R'
     'SBART.R'
     'XRF.R'
@@ -45,4 +44,7 @@ Collate:
     'TRF.R'
     'TBART.R'
     'helper_functions.R'
+    'DRRF.R'
+    'ExmpleSetups_causaleffects.R'
+    'MRF.R'
     'MBART.R'

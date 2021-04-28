@@ -156,6 +156,7 @@ xl_ci_rf <- CateCI(xl_rf, feature_test, B = 500)
 }
 \seealso{
 Other metalearners: 
+\code{\link{DR-Learner}},
 \code{\link{M-Learner}},
 \code{\link{S-Learner}},
 \code{\link{X-Learner}}
