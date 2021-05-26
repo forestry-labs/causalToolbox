@@ -40,8 +40,12 @@ setGeneric(
 #'@param nthread Number of threads to be used in parallel.
 #'@param verbose TRUE for detailed output, FALSE for no output.
 #'@param bootstrapVersion Default is normalApprox, which will use the 
-#'bootstrap normal approximation to get CI. Smoothed will use CI around the
-#'smoothed bootstrap as introduced by Efron 2014.
+#' bootstrap normal approximation to get CI. Smoothed will use CI around the
+#' smoothed bootstrap as introduced by Efron 2014. The third option is to use 
+#' the doubleBootstrap option, which uses a double level bootstrap to calibrate 
+#' the quantiles used in the bootstrap estimation of the intervals. For reference
+#' see https://arxiv.org/pdf/1511.00273.pdf, although this is an older algorithm
+#' which was introduced much earlier.
 #'@export
 #' @examples
 #' \dontrun{
@@ -117,6 +121,13 @@ setMethod(
       )
     }
     
+    if (bootstrapVersion == "doubleBootstrap" & verbose & B >= 1000) {
+      warning(
+        paste("Warning, the doubleBootstrap uses B^2 = ", B^2, " bootstraps",
+              "On larger data sets this may take some time")
+      )
+    }
+    
     if (method == "maintain_group_ratios") {
       createbootstrappedData <- function() {
 
@@ -128,6 +139,26 @@ setMethod(
                          size = sum(tr))
         smpl <- sample(c(smpl_0, smpl_1))
 
+        return(list(
+          feat_b = feat[smpl, ],
+          tr_b = tr[smpl],
+          yobs_b = yobs[smpl], 
+          smpl = smpl
+        ))
+      }
+      
+      createSecondBootstrappedData <- function(
+        original_indices
+      ) {
+        
+        smpl_0 <- sample(original_indices[tr == 0],
+                         replace = TRUE,
+                         size = sum(1 - tr))
+        smpl_1 <- sample(original_indices[tr == 1],
+                         replace = TRUE,
+                         size = sum(tr))
+        smpl <- sample(c(smpl_0, smpl_1))
+        
         return(list(
           feat_b = feat[smpl, ],
           tr_b = tr[smpl],
@@ -171,7 +202,12 @@ setMethod(
             bs <- createbootstrappedData()
             
             counts <- table(bs$smpl)
-            S[names(counts), b] <- counts
+            if (bootstrapVersion == "doubleBootstrap") {
+              S[, b] <- bs[["smpl"]]
+            } else {
+              S[names(counts), b] <- counts
+            }
+
             withCallingHandlers(
               # this is needed such that bootstrapped warnings are only
               # printed once
@@ -248,6 +284,72 @@ setMethod(
         pred = smoothed_mean,
         X5. =  smoothed_mean - 1.96 * sqrt(var_sol),
         X95. = smoothed_mean + 1.96 * sqrt(var_sol)))
+      
+    } else if (bootstrapVersion == "doubleBootstrap") {
+      B_1 <- B
+      B_2 <- B
+      # For doubleBootstrap, we now do B bootstrap resamples of each original
+      # bootstrap sample. We then estimate the predictions using each resampled
+      # double bootstraps. This gives us B^2 total prediction vectors.
+      # Then we find the largest quantile Lambda such that in 95% of the B 
+      # doubleBootstrap sets, the standard predictions are contained in the 
+      # 1-lambda and lambda percentiles of the second layer bootstrap predicions.
+      # One idea is maybe we use B_2 ~ O(B_1^q) with .5 < q < 1, this is around 
+      # the asymptotic
+      # number for Wager's Infinitesimal Jacknife, and follows Hall's heuristic
+      # to use a smaller number of double bootstraps than first level bootstraps
+      
+      
+      jobs <- as.data.frame(expand.grid(1:B_2, 1:B_1))
+      colnames(jobs) <- c("B_2", "B_1")
+      jobs <- cbind(jobs, data.frame(matrix(0,nrow = B_1*B_2, ncol = nrow(feature_new))))
+      
+      # For now do second layer of bootstraps in serial
+      for (i in 1:B_1) {
+        # Get current outside bootstrap indices
+        current_bootstrap_idx <- S[,i]
+        
+        for (j in 1:B_2) {
+          if (verbose) {
+            print(paste0("Running ",((i-1)*B_2+j)," of ", B_1*B_2))
+          }
+
+          jobs[which(jobs$B_2 == j && jobs$B_1 == i),c(-1,-2)] <-
+            tryCatch({
+              second_bootstrap <- createSecondBootstrappedData(current_bootstrap_idx)
+      
+              withCallingHandlers(
+                # this is needed such that bootstrapped warnings are only
+                # printed once
+                EstimateCate(
+                  creator(
+                    feat = second_bootstrap$feat_b,
+                    tr = second_bootstrap$tr_b,
+                    yobs = second_bootstrap$yobs_b
+                  ),
+                  feature_new = feature_new
+                ),
+                warning = function(w) {
+                  if (w$message %in% known_warnings) {
+                    # message was already printed and can be ignored
+                    invokeRestart("muffleWarning")
+                  } else{
+                    # message is added to the known_warning list:
+                    known_warnings <<- c(known_warnings, w$message)
+                  }
+                }
+              )
+            },
+            error = function(e) {
+              return(NA)
+            })
+        }
+      }
+      
+      # Now we have the double bootstrap estimates, we need to calibrate the
+      # CI based on 
+      
+      
     } else {
       stop("bootstrapVersion must be specified.")
     }
