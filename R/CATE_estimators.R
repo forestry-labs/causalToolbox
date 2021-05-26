@@ -168,7 +168,7 @@ setMethod(
       }
     }
 
-    #### Run the bootstrap CI estimation #####################################
+    # Run the bootstrap CI estimation #####################################
 
     # pred_B will contain for each simulation the prediction of each of the B
     # simulaions:
@@ -238,8 +238,9 @@ setMethod(
     }
 
     if (bootstrapVersion == "normalApprox") {
-      # normal Approximated Bootstrap ------------------------------------------
-      # get the predictions from the original method
+      
+      # Normal Approximated Bootstrap -----------------------------------------
+      
       pred <- EstimateCate(theObject, feature_new = feature_new)
       # the the 5% and 95% CI from the bootstrapped procedure
       CI_b <- data.frame(
@@ -286,6 +287,7 @@ setMethod(
         X95. = smoothed_mean + 1.96 * sqrt(var_sol)))
       
     } else if (bootstrapVersion == "doubleBootstrap") {
+      # Double Bootstrap -------------------------------------------------------
       B_1 <- B
       B_2 <- B
       # For doubleBootstrap, we now do B bootstrap resamples of each original
@@ -441,6 +443,18 @@ setMethod(
                      MARGIN = 1, 
                      FUN = function(x){return(quantile(x, probs = c(1-(1-lambda)/2)))})
       )), "lambda" = lambda)
+      
+    } else if (bootstrapVersion == "conformal") {
+      # Localized conformal intervals ------------------------------------------
+      
+      # The local conformal intervals make use of the weighting function of RF,
+      # so for now, this can only be used with S_RF, trained with OOBhonest = TRUE
+      if ((class(theObject)[1] != "S_RF") | (!theObject@hyperparameter_list$mu.forestry$OOBhonest)) {
+        stop("For local conformal intervals, we must use S_RF with OOBhonest = TRUE")
+      }
+      preds <- EstimateCate(theObject = theObject,
+                            feature_new = theObject@feature_train,
+                            aggregation = "oob")
       
     } else {
       stop("bootstrapVersion must be specified.")

@@ -45,6 +45,10 @@ test_that("Tests that ShRF is working correctly", {
         middleSplit = FALSE,
         OOBhonest = TRUE))
 
+  context("Allow passing aggregation options to predict")
+  preds_oob <- EstimateCate(sl, feature_new = sl@feature_train,aggregation = "oob")
+  preds <- EstimateCate(sl, feature_new = sl@feature_train,aggregation = "average")
+  
   expect_equal(mean((
     EstimateCate(sl, cate_problem$feat_te) - cate_problem$tau_te
   ) ^ 2),

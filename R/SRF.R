@@ -183,14 +183,16 @@ S_RF_fully_specified <-
 setMethod(
   f = "EstimateCate",
   signature = "S_RF",
-  definition = function(theObject, feature_new)
+  definition = function(theObject, 
+                        feature_new,
+                        ...)
   {
     feature_new <- as.data.frame(feature_new)
     catch_feat_input_errors(feature_new)
 
     return(
-      predict(theObject@forest, cbind(feature_new, tr = 1)) -
-        predict(theObject@forest, cbind(feature_new, tr = 0))
+      predict(theObject@forest, cbind(feature_new, tr = 1), ...) -
+        predict(theObject@forest, cbind(feature_new, tr = 0), ...)
     )
   }
 )
