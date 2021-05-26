@@ -314,7 +314,7 @@ setMethod(
             print(paste0("Running ",((i-1)*B_2+j)," of ", B_1*B_2))
           }
 
-          jobs[which(jobs$B_2 == j && jobs$B_1 == i),c(-1,-2)] <-
+          jobs[which(jobs$B_2 == j & jobs$B_1 == i), c(-1,-2)] <-
             tryCatch({
               second_bootstrap <- createSecondBootstrappedData(current_bootstrap_idx)
       
@@ -352,7 +352,95 @@ setMethod(
       # inner bootstrap. If the coverage is too low, we decrease the quantile, 
       # if it is too high, we increase the quantile until the calibration gets 
       # close to .95 across the outer layer of bootstraps
+      if (verbose) {
+        print("Calibrating quantiles")
+      }
       
+      lambda <- .95
+      converged <- FALSE
+      max_reps <- 30
+      max_close_reps <- 3
+      reps <- 0
+      close_reps <- 0
+      
+      # Get CATE estimates
+      pred <- EstimateCate(theObject, feature_new = feature_new)
+      
+      while (!converged) {
+        # Get upper and lower bounds of each second layer bootstrap at levels lambda/2, (1-lambda)/2
+        jobs %>%
+          group_by(as.factor(B_1)) %>%
+          summarise(across(starts_with("X"), 
+                    list(upper = 
+                           function(x){return(quantile(x, probs = c(1-(1-lambda)/2)))},
+                         lower = 
+                           function(x){return(quantile(x, probs = c((1-lambda)/2)))}
+                         ))) -> quants
+        
+        quants %>% 
+          select(contains("lower")) %>% 
+          t() -> lower_bounds
+        
+        quants %>% 
+          select(contains("upper")) %>% 
+          t() -> upper_bounds
+        
+        # Get coverage of the estimated predictions across first level of bootstrap
+        # using current quantiles quantile(probs = c((1-lambda)/2, 1-(1-lambda)/2)))
+        coverage_lower <- apply(lower_bounds,
+                          MARGIN = 2,
+                          FUN = function(x){return(x < pred)})
+        
+        coverage_upper <- apply(upper_bounds,
+                          MARGIN = 2,
+                          FUN = function(x){return(x > pred)})
+        
+        (coverage_lower & coverage_upper) %>% 
+          apply(MARGIN = 1, FUN = function(x){return(length(which(x))/length(x))}) %>% 
+          unname() %>% 
+          median() -> med_point_coverage
+            
+        # We have two options here, we can either adjust the quantiles separately
+        # for each point, or we can adjust the quantiles for the set- using the 
+        # median coverage. We do the second for now
+        
+        # If coverage > .95 increase lambda, if coverage < .95 reduce lambda, 
+        # if coverage ~= .95, return the right quantiles from the first layer of bootstraps
+        reps <- reps + 1
+        if (reps > max_reps ){
+          break
+        }
+        if (med_point_coverage < .94) {
+          lambda <- lambda + .01
+        } else if (med_point_coverage > .96) {
+          lambda <- lambda - .01
+        } else {
+          close_reps <- close_reps + 1
+          if (close_reps > max_close_reps){
+            break
+          }
+          if (med_point_coverage < .95) {
+            lambda <- lambda + .05
+          } else {
+            lambda <- lambda - .05
+          }
+        }
+      }
+      
+      # Now we have calibrated the lambda, we want to return the quantiles
+      # of the first layer of bootstrap estimates according to 1-(1-lambda)/2 and (1-lambda)/2
+      
+      return(list("CI" = data.frame(
+        pred = pred,
+        # Get the lower quantile based on lambda
+        X5. = apply(pred_B, 
+                    MARGIN = 1, 
+                    FUN = function(x){return(quantile(x, probs = c((1-lambda)/2)))}),
+        # Get the upper quantile based on lambda
+        X95. = apply(pred_B, 
+                     MARGIN = 1, 
+                     FUN = function(x){return(quantile(x, probs = c(1-(1-lambda)/2)))})
+      )), "lambda" = lambda)
       
     } else {
       stop("bootstrapVersion must be specified.")
