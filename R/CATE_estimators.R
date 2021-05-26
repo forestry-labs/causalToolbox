@@ -348,6 +348,10 @@ setMethod(
       
       # Now we have the double bootstrap estimates, we need to calibrate the
       # CI based on 
+      # We do this by starting with a quantile, .95, and pulling this for each
+      # inner bootstrap. If the coverage is too low, we decrease the quantile, 
+      # if it is too high, we increase the quantile until the calibration gets 
+      # close to .95 across the outer layer of bootstraps
       
       
     } else {
