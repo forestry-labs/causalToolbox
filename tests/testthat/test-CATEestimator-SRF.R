@@ -11,6 +11,23 @@ test_that("Tests that ShRF is working correctly", {
     feat = feat,
     tr = tr,
     yobs = yobs)
+  
+  context("Test conformal intervals")
+  CI <- CateCI(sl, 
+               feature_new = feat[1:75,],
+               bootstrapVersion = "conformal")
+  
+  expect_equal(nrow(CI),75)
+  
+  
+  context("Test double bootstrap intervals")
+  # CI <- CateCI(sl, 
+  #              feature_new = feat[1:75,],
+  #              bootstrapVersion = "doubleBootstrap",
+  #              B = 50,
+  #              B_Second = 10)
+  
+  context("Test disallowed settings")
 
   # expect_equal(EstimateCate(sl, feat)[1], 0.0369185, tolerance = 1e-4)
 
@@ -47,12 +64,17 @@ test_that("Tests that ShRF is working correctly", {
 
   context("Allow passing aggregation options to predict")
   preds_oob <- EstimateCate(sl, feature_new = sl@feature_train,aggregation = "oob")
+  
+  expect_equal(length(preds_oob), 400)
+  
   preds <- EstimateCate(sl, feature_new = sl@feature_train,aggregation = "average")
+  
+  expect_equal(length(preds), 400)
   
   expect_equal(mean((
     EstimateCate(sl, cate_problem$feat_te) - cate_problem$tau_te
   ) ^ 2),
-  52,
+  22.5,
   tolerance = 1)
 
 })

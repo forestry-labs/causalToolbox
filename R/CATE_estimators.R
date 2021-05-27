@@ -37,6 +37,10 @@ setGeneric(
 #'@param feature_new A feature data frame.
 #'@param method Different versions of the bootstrap.
 #'@param B Number of bootstrap samples.
+#'@param B_Second Number of bootstrap samples to take in the second layer of the
+#' double bootstrap (the calibration samples). By default this is equal to B, 
+#' however in practice we suggest using a slightly smaller value as the runtime
+#' is constrained by O(B * B_Second).
 #'@param nthread Number of threads to be used in parallel.
 #'@param verbose TRUE for detailed output, FALSE for no output.
 #'@param bootstrapVersion Default is normalApprox, which will use the 
@@ -73,6 +77,7 @@ setGeneric(
                  method = "maintain_group_ratios",
                  bootstrapVersion = "normalApprox",
                  B = 2000,
+                 B_Second = B,
                  nthread = 0,
                  verbose = TRUE) {
     standardGeneric("CateCI")
@@ -96,6 +101,7 @@ setMethod(
                         method,
                         bootstrapVersion,
                         B,
+                        B_Second,
                         nthread,
                         verbose) {
     ## shortcuts:
@@ -126,6 +132,41 @@ setMethod(
         paste("Warning, the doubleBootstrap uses B^2 = ", B^2, " bootstraps",
               "On larger data sets this may take some time")
       )
+    }
+    
+    if (bootstrapVersion == "conformal") {
+      # standard conformal intervals ------------------------------------------
+      
+      # The local conformal intervals make use of the weighting function of RF,
+      # so for now, this can only be used with S_RF, trained with OOBhonest = TRUE
+      if ((class(theObject)[1] != "S_RF") | (!theObject@hyperparameter_list$mu.forestry$OOBhonest)) {
+        stop("For local conformal intervals, we must use S_RF")
+      }
+      if (theObject@forest@OOBhonest) {
+        pred_insample <- EstimateCate(theObject = theObject,
+                                      feature_new = theObject@feature_train,
+                                      aggregation = "oob")
+      } else {
+        pred_insample <- EstimateCate(theObject = theObject,
+                                      feature_new = theObject@feature_train,
+                                      aggregation = "average")
+      }
+      
+      
+      quantiles <- quantile(pred_insample, probs = c(.025, .975))
+      
+      pred <- EstimateCate(theObject, feature_new = feature_new)
+      
+      return(data.frame(
+        pred = pred,
+        X5. =  pred + unname(quantiles)[1],
+        X95. = pred + unname(quantiles)[2]
+        # X5. =  pred - (CI_b$X95. - CI_b$X5.) / 2,
+        # X95. = pred + (CI_b$X95. - CI_b$X5.) / 2
+        # X5. =  2 * pred - CI_b$X95.,
+        # X95. = 2 * pred - CI_b$X5.
+      ))
+      
     }
     
     if (method == "maintain_group_ratios") {
@@ -288,8 +329,9 @@ setMethod(
       
     } else if (bootstrapVersion == "doubleBootstrap") {
       # Double Bootstrap -------------------------------------------------------
+      library(dplyr)
       B_1 <- B
-      B_2 <- B
+      B_2 <- B_Second
       # For doubleBootstrap, we now do B bootstrap resamples of each original
       # bootstrap sample. We then estimate the predictions using each resampled
       # double bootstraps. This gives us B^2 total prediction vectors.
@@ -305,6 +347,10 @@ setMethod(
       jobs <- as.data.frame(expand.grid(1:B_2, 1:B_1))
       colnames(jobs) <- c("B_2", "B_1")
       jobs <- cbind(jobs, data.frame(matrix(0,nrow = B_1*B_2, ncol = nrow(feature_new))))
+      
+      if (verbose) {
+        print("Running second layer of bootstraps")
+      }
       
       # For now do second layer of bootstraps in serial
       for (i in 1:B_1) {
@@ -443,18 +489,6 @@ setMethod(
                      MARGIN = 1, 
                      FUN = function(x){return(quantile(x, probs = c(1-(1-lambda)/2)))})
       )), "lambda" = lambda)
-      
-    } else if (bootstrapVersion == "conformal") {
-      # Localized conformal intervals ------------------------------------------
-      
-      # The local conformal intervals make use of the weighting function of RF,
-      # so for now, this can only be used with S_RF, trained with OOBhonest = TRUE
-      if ((class(theObject)[1] != "S_RF") | (!theObject@hyperparameter_list$mu.forestry$OOBhonest)) {
-        stop("For local conformal intervals, we must use S_RF with OOBhonest = TRUE")
-      }
-      preds <- EstimateCate(theObject = theObject,
-                            feature_new = theObject@feature_train,
-                            aggregation = "oob")
       
     } else {
       stop("bootstrapVersion must be specified.")

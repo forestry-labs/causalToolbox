@@ -5,7 +5,7 @@
 \alias{EstimateCate,M_RF-method}
 \title{EstimateCate-S_hRF}
 \usage{
-\S4method{EstimateCate}{S_RF}(theObject, feature_new)
+\S4method{EstimateCate}{S_RF}(theObject, feature_new, ...)
 
 \S4method{EstimateCate}{M_RF}(theObject, feature_new)
 }
@@ -13,6 +13,8 @@
 \item{theObject}{A `MetaLearner` object.}
 
 \item{feature_new}{A feature data frame.}
+
+\item{...}{Additional parameters that are specific for some MetaLearners}
 }
 \description{
 Returns the estimated CATE.
