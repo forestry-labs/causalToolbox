@@ -426,11 +426,11 @@ setMethod(
                          ))) -> quants
         
         quants %>% 
-          select(contains("lower")) %>% 
+          dplyr::select(contains("lower")) %>% 
           t() -> lower_bounds
         
         quants %>% 
-          select(contains("upper")) %>% 
+          dplyr::select(contains("upper")) %>% 
           t() -> upper_bounds
         
         # Get coverage of the estimated predictions across first level of bootstrap
@@ -459,18 +459,18 @@ setMethod(
           break
         }
         if (med_point_coverage < .94) {
-          lambda <- lambda + .01
+          lambda <- min(lambda + .01, .995)
         } else if (med_point_coverage > .96) {
-          lambda <- lambda - .01
+          lambda <- min(lambda - .01, .995)
         } else {
           close_reps <- close_reps + 1
           if (close_reps > max_close_reps){
             break
           }
           if (med_point_coverage < .95) {
-            lambda <- lambda + .05
+            lambda <- min(lambda + .05, .995)
           } else {
-            lambda <- lambda - .05
+            lambda <- min(lambda - .05, .995)
           }
         }
       }
@@ -488,7 +488,7 @@ setMethod(
         X95. = apply(pred_B, 
                      MARGIN = 1, 
                      FUN = function(x){return(quantile(x, probs = c(1-(1-lambda)/2)))})
-      )), "lambda" = lambda)
+      ), "lambda" = lambda))
       
     } else {
       stop("bootstrapVersion must be specified.")
