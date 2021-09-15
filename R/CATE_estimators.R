@@ -79,7 +79,8 @@ setGeneric(
                  B = 2000,
                  B_Second = B,
                  nthread = 0,
-                 verbose = TRUE) {
+                 verbose = TRUE,
+                 aggregation = "oob") {
     standardGeneric("CateCI")
   }
 )
@@ -103,8 +104,10 @@ setMethod(
                         B,
                         B_Second,
                         nthread,
-                        verbose) {
+                        verbose,
+                        aggregation = "oob") {
     ## shortcuts:
+
     feat <- theObject@feature_train
     tr <- theObject@tr_train
     yobs <- theObject@yobs_train
@@ -167,6 +170,13 @@ setMethod(
         # X95. = 2 * pred - CI_b$X5.
       ))
       
+    }
+    
+    if ("aggregation" %in% ls() ) {
+      # If not an honest forest, switch the default aggregation version
+      if (!(theObject@forest@OOBhonest || theObject@forest@splitratio %in% c(1,0))) {
+        aggregation = "average"
+      }
     }
     
     if (method == "maintain_group_ratios") {
@@ -258,7 +268,8 @@ setMethod(
                   tr = bs$tr_b,
                   yobs = bs$yobs_b
                 ),
-                feature_new = feature_new
+                feature_new = feature_new,
+                aggregation = aggregation
               ),
               warning = function(w) {
                 if (w$message %in% known_warnings) {
@@ -375,7 +386,8 @@ setMethod(
                     tr = second_bootstrap$tr_b,
                     yobs = second_bootstrap$yobs_b
                   ),
-                  feature_new = feature_new
+                  feature_new = feature_new,
+                  aggregation = aggregation
                 ),
                 warning = function(w) {
                   if (w$message %in% known_warnings) {
@@ -406,15 +418,20 @@ setMethod(
       
       lambda <- .95
       converged <- FALSE
-      max_reps <- 30
+      max_reps <- 20
       max_close_reps <- 3
       reps <- 0
       close_reps <- 0
       
       # Get CATE estimates
-      pred <- EstimateCate(theObject, feature_new = feature_new)
+      pred <- EstimateCate(theObject, 
+                           feature_new = feature_new, 
+                           aggregation = aggregation)
       
       while (!converged) {
+        if (verbose) {
+          print(paste0("On rep ",reps," of ",max_reps))
+        }
         # Get upper and lower bounds of each second layer bootstrap at levels lambda/2, (1-lambda)/2
         jobs %>%
           group_by(as.factor(B_1)) %>%

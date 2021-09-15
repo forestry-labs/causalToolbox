@@ -190,6 +190,33 @@ setMethod(
     feature_new <- as.data.frame(feature_new)
     catch_feat_input_errors(feature_new)
 
+    # Check if we want to do bias correction predictions
+    if ("aggregation" %in% ls() && substr(aggregation,1,2) == "bc") {
+      if (aggregation == "bc1") {
+        return(
+          correctedPredict(theObject@forest, cbind(feature_new, tr = 1)) -
+            correctedPredict(theObject@forest, cbind(feature_new, tr = 0))
+        )
+      } else if (aggregation == "bc2") {
+        return(
+          correctedPredict(theObject@forest, cbind(feature_new, tr = 1), nrounds = 1) -
+            correctedPredict(theObject@forest, cbind(feature_new, tr = 0), nrounds = 1)
+        )
+      } else if (aggregation == "bc3") {
+        return(
+          correctedPredict(theObject@forest, cbind(feature_new, tr = 1), nrounds = 1, monotone = TRUE) -
+            correctedPredict(theObject@forest, cbind(feature_new, tr = 0), nrounds = 1, monotone = TRUE)
+        )
+      } else if (aggregation == "bc4") {
+        return(
+          correctedPredict(theObject@forest, cbind(feature_new, tr = 1), simple=FALSE) -
+            correctedPredict(theObject@forest, cbind(feature_new, tr = 0), simple=FALSE)
+        )
+      } else {
+        stop(paste0("Aggregation not found: ",aggregation))
+      }
+    }
+    
     return(
       predict(theObject@forest, cbind(feature_new, tr = 1), ...) -
         predict(theObject@forest, cbind(feature_new, tr = 0), ...)
