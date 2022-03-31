@@ -63,6 +63,9 @@ setClass(
 #'   default is "propmean," which refers to propensity score weighting.
 #' @param nthread Number of threads which should be used to work in parallel.
 #' @param verbose TRUE for detailed output, FALSE for no output.
+#' @param correction The parameters to use for the bias corrected predictions 
+#'   when creating the outcome and treatment effect regressions. Should be a list
+#'   of parameters that can be passed to Rforestry::correctedPredict.
 #' @param mu.forestry,tau.forestry,e.forestry A list containing the
 #'   hyperparameters for the \code{Rforestry} package that are used for
 #'   estimating the response functions, the CATE, and the propensity score.
@@ -164,6 +167,7 @@ X_RF <-
            predmode = "propmean",
            nthread = 0,
            verbose = FALSE,
+           correction = NULL,
            mu.forestry =
              list(
                relevant.Variable = 1:ncol(feat),
@@ -266,7 +270,8 @@ X_RF <-
       "l_first_1" = mu.forestry,
       "l_second_0" = tau.forestry,
       "l_second_1" = tau.forestry,
-      "l_prop" = e.forestry
+      "l_prop" = e.forestry,
+      "correction" = correction
     )
     
     return(
@@ -336,13 +341,28 @@ X_RF_fully_specified <-
     }
     
     # Second Stage -------------------------------------------------------------
+    if (is.null(hyperparameter_list[["correction"]])) {
+      preds.control = predict(m_0, X_1[, hyperparameter_list[["l_first_1"]]$relevant.Variable])
+      preds.treat = predict(m_1, X_0[, hyperparameter_list[["l_first_0"]]$relevant.Variable]) 
+    } else {
+      # Get the control group predictions
+      params.control = hyperparameter_list[["correction"]]
+      params.control$object = m_0
+      params.control$newdata = X_1[, hyperparameter_list[["l_first_1"]]$relevant.Variable]
+      preds.control = do.call(Rforestry::correctedPredict, args = params.control)
+      
+      # Get treatment group predictions
+      params.treat = hyperparameter_list[["correction"]]
+      params.treat$object = m_1
+      params.treat$newdata = X_0[, hyperparameter_list[["l_first_0"]]$relevant.Variable]
+      preds.treat = do.call(Rforestry::correctedPredict, args = params.treat) 
+    }
+    
     r_0 <- 
-      predict(m_1, 
-              X_0[, hyperparameter_list[["l_first_0"]]$relevant.Variable]) - 
-      yobs_0
+      preds.treat - yobs_0
     r_1 <-
-      yobs_1 - 
-      predict(m_0, X_1[, hyperparameter_list[["l_first_1"]]$relevant.Variable])
+      yobs_1 - preds.control
+      
     
     m_tau_0 <-
       Rforestry::forestry(
@@ -447,10 +467,30 @@ setMethod(
     
     
     if (predmode == "propmean") {
-      return(
-        prop_scores * predict(theObject@m_tau_0, feature_new) +
-          (1 - prop_scores) * predict(theObject@m_tau_1, feature_new)
-      )
+      # If we need to use a corrected prediction, pass these parameters to the 
+      # correction
+      if (is.null(theObject@hyperparameter_list[["correction"]])) {
+        return(
+          prop_scores * predict(theObject@m_tau_0, feature_new) +
+            (1 - prop_scores) * predict(theObject@m_tau_1, feature_new)
+        )
+      } else {
+        # Set the correctedPredict parameters for the control set
+        params.control = theObject@hyperparameter_list[["correction"]]
+        params.control$object = theObject@m_tau_0
+        params.control$newdata = feature_new
+        
+        # Set the correctedPredict parameters for the treatment set
+        params.treat = theObject@hyperparameter_list[["correction"]]
+        params.treat$object = theObject@m_tau_1
+        params.treat$newdata = feature_new
+        
+        return(
+          prop_scores * do.call(Rforestry::correctedPredict, args = params.control) +
+            (1 - prop_scores) * do.call(Rforestry::correctedPredict, args = params.treat)
+        )
+      }
+
     }
     
     if (predmode == "extreme") {
