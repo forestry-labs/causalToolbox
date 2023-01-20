@@ -13,6 +13,7 @@ X_RF(
   predmode = "propmean",
   nthread = 0,
   verbose = FALSE,
+  correction = NULL,
   mu.forestry = list(relevant.Variable = 1:ncol(feat), ntree = 1000, replace = TRUE,
     sample.fraction = 0.8, mtry = round(ncol(feat) * 13/20), nodesizeSpl = 2, nodesizeAvg
     = 1, nodesizeStrictSpl = 2, nodesizeStrictAvg = 1, splitratio = 1, middleSplit =
@@ -38,10 +39,9 @@ X_BART(
   mu.BART = list(sparse = FALSE, theta = 0, omega = 1, a = 0.5, b = 1, augment = FALSE,
     rho = NULL, usequants = FALSE, cont = FALSE, sigest = NA, sigdf = 3, sigquant = 0.9,
     k = 2, power = 2, base = 0.95, sigmaf = NA, lambda = NA, numcut = 100L, nskip = 100L),
-  tau.BART = list(sparse = FALSE, theta = 0, omega = 1, a = 0.5, b = 1, augment =
-    FALSE, rho = NULL, usequants = FALSE, cont = FALSE, sigest = NA, sigdf = 3, sigquant
-    = 0.9, k = 2, power = 2, base = 0.95, sigmaf = NA, lambda = NA, numcut = 100L, nskip
-    = 100L),
+  tau.BART = list(sparse = FALSE, theta = 0, omega = 1, a = 0.5, b = 1, augment = FALSE,
+    rho = NULL, usequants = FALSE, cont = FALSE, sigest = NA, sigdf = 3, sigquant = 0.9,
+    k = 2, power = 2, base = 0.95, sigmaf = NA, lambda = NA, numcut = 100L, nskip = 100L),
   e.BART = list(sparse = FALSE, theta = 0, omega = 1, a = 0.5, b = 1, augment = FALSE,
     rho = NULL, usequants = FALSE, cont = FALSE, sigest = NA, sigdf = 3, sigquant = 0.9,
     k = 2, power = 2, base = 0.95, sigmaf = NA, lambda = NA, numcut = 100L, nskip = 100L)
@@ -61,6 +61,10 @@ default is "propmean," which refers to propensity score weighting.}
 \item{nthread}{Number of threads which should be used to work in parallel.}
 
 \item{verbose}{TRUE for detailed output, FALSE for no output.}
+
+\item{correction}{The parameters to use for the bias corrected predictions 
+when creating the outcome and treatment effect regressions. Should be a list
+of parameters that can be passed to Rforestry::correctedPredict.}
 
 \item{mu.forestry, tau.forestry, e.forestry}{A list containing the
 hyperparameters for the \code{Rforestry} package that are used for

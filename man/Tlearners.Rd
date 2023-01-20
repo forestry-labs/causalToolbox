@@ -30,14 +30,12 @@ T_BART(
   ntree = 200,
   nthread = 1,
   verbose = FALSE,
-  mu0.BART = list(sparse = FALSE, theta = 0, omega = 1, a = 0.5, b = 1, augment =
-    FALSE, rho = NULL, usequants = FALSE, cont = FALSE, sigest = NA, sigdf = 3, sigquant
-    = 0.9, k = 2, power = 2, base = 0.95, sigmaf = NA, lambda = NA, numcut = 100L, nskip
-    = 100L),
-  mu1.BART = list(sparse = FALSE, theta = 0, omega = 1, a = 0.5, b = 1, augment =
-    FALSE, rho = NULL, usequants = FALSE, cont = FALSE, sigest = NA, sigdf = 3, sigquant
-    = 0.9, k = 2, power = 2, base = 0.95, sigmaf = NA, lambda = NA, numcut = 100L, nskip
-    = 100L)
+  mu0.BART = list(sparse = FALSE, theta = 0, omega = 1, a = 0.5, b = 1, augment = FALSE,
+    rho = NULL, usequants = FALSE, cont = FALSE, sigest = NA, sigdf = 3, sigquant = 0.9,
+    k = 2, power = 2, base = 0.95, sigmaf = NA, lambda = NA, numcut = 100L, nskip = 100L),
+  mu1.BART = list(sparse = FALSE, theta = 0, omega = 1, a = 0.5, b = 1, augment = FALSE,
+    rho = NULL, usequants = FALSE, cont = FALSE, sigest = NA, sigdf = 3, sigquant = 0.9,
+    k = 2, power = 2, base = 0.95, sigmaf = NA, lambda = NA, numcut = 100L, nskip = 100L)
 )
 }
 \arguments{

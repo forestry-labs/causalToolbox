@@ -1,7 +1,7 @@
 Package: causalToolbox
 Type: Package
 Title: Toolbox for Causal Inference with emphasize on Heterogeneous Treatment Effect Estimator
-Version: 0.0.2.3
+Version: 0.0.2.4
 Author: Sören Künzel, Allen Tang, Ling Xie, Theo Saarinen, Peter Bickel, Bin Yu, Jasjeet Sekhon
 Maintainer: Sören Künzel <srk@berkeley.edu>, Allen Tang <actang.me@gmail.com>
 Description: Estimate heterogeneous treatment effects in experimental and 
@@ -28,7 +28,7 @@ Imports:
     distances, 
     BART
 Remotes: forestry-labs/Rforestry
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.1
 Suggests:
     testthat,
     knitr,

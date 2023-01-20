@@ -4,7 +4,17 @@
 \alias{CateCI,CATEestimator-method}
 \title{CateCI-MetaLearner}
 \usage{
-\S4method{CateCI}{CATEestimator}(theObject, feature_new, method, bootstrapVersion, B, nthread, verbose)
+\S4method{CateCI}{CATEestimator}(
+  theObject,
+  feature_new,
+  method = "maintain_group_ratios",
+  bootstrapVersion = "normalApprox",
+  B = 2000,
+  B_Second = B,
+  nthread = 0,
+  verbose = TRUE,
+  aggregation = "oob"
+)
 }
 \arguments{
 \item{theObject}{A `MetaLearner` object.}
@@ -13,15 +23,20 @@
 
 \item{method}{Different versions of the bootstrap.}
 
-\item{bootstrapVersion}{Default is normalApprox, which will use the 
+\item{bootstrapVersion}{Default is normalApprox, which will use the
 bootstrap normal approximation to get CI. Smoothed will use CI around the
-smoothed bootstrap as introduced by Efron 2014. The third option is to use 
-the doubleBootstrap option, which uses a double level bootstrap to calibrate 
+smoothed bootstrap as introduced by Efron 2014. The third option is to use
+the doubleBootstrap option, which uses a double level bootstrap to calibrate
 the quantiles used in the bootstrap estimation of the intervals. For reference
 see https://arxiv.org/pdf/1511.00273.pdf, although this is an older algorithm
 which was introduced much earlier.}
 
 \item{B}{Number of bootstrap samples.}
+
+\item{B_Second}{Number of bootstrap samples to take in the second layer of the
+double bootstrap (the calibration samples). By default this is equal to B,
+however in practice we suggest using a slightly smaller value as the runtime
+is constrained by O(B * B_Second).}
 
 \item{nthread}{Number of threads to be used in parallel.}
 
